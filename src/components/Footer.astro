@@ -1,5 +1,6 @@
 ---
 import { site } from "../site.config";
+import { url } from "../lib/url";
 
 const year = new Date().getFullYear();
 ---
@@ -29,7 +30,7 @@ const year = new Date().getFullYear();
         {
           site.nav.map((item) => (
             <li>
-              <a href={item.href} class="hover:underline">
+              <a href={url(item.href)} class="hover:underline">
                 {item.label}
               </a>
             </li>

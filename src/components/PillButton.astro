@@ -1,4 +1,6 @@
 ---
+import { url } from "../lib/url";
+
 interface Props {
   href: string;
   variant?: "solid" | "outline" | "inverted";
@@ -16,6 +18,6 @@ const styles =
       : "border border-black bg-transparent text-black";
 ---
 
-<a href={href} class={`${base} ${styles} ${className}`}>
+<a href={url(href)} class={`${base} ${styles} ${className}`}>
   <slot />
 </a>

@@ -7,6 +7,7 @@ import PlaceholderImage from "../components/PlaceholderImage.astro";
 import TestimonialCard from "../components/TestimonialCard.astro";
 import PillButton from "../components/PillButton.astro";
 import { site, placeholderTestimonials } from "../site.config";
+import { url } from "../lib/url";
 ---
 
 <Layout title="Home">
@@ -84,7 +85,7 @@ import { site, placeholderTestimonials } from "../site.config";
   <section class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
     <div class="flex items-baseline justify-between gap-6">
       <h2 class="font-heading text-3xl md:text-4xl">What clients say</h2>
-      <a href="/testimonials" class="shrink-0 font-body text-sm underline underline-offset-4">
+      <a href={url("/testimonials")} class="shrink-0 font-body text-sm underline underline-offset-4">
         See all testimonials
       </a>
     </div>

@@ -14,5 +14,8 @@ node_modules/
 # macOS
 .DS_Store
 
+# Claude Code tooling state (not part of the project)
+.claude/
+
 # logs
 npm-debug.log*
