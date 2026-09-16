@@ -8,20 +8,20 @@ import { placeholderTestimonials } from "../site.config";
 <Layout title="Testimonials" description="See what clients say about Luxury Duo Cleaning LLC.">
   <section class="mx-auto max-w-3xl px-6 pb-4 pt-16 text-center md:pt-24">
     <h1 class="font-heading text-4xl md:text-5xl">What clients say</h1>
-    <p class="mt-4 font-body text-black/70">
+    <p class="mt-4 font-body text-ink/70">
       This company is newly launched — the quotes below are clearly-marked placeholders. Replace them with
       real client testimonials as they come in.
     </p>
   </section>
 
   <section class="mx-auto max-w-3xl px-6 py-16 md:px-10 md:py-24">
-    <div class="divide-y divide-black">
+    <div class="divide-y divide-ink">
       {placeholderTestimonials.map((t) => <TestimonialCard quote={t.quote} author={t.author} />)}
     </div>
   </section>
 
   <section class="mx-auto max-w-6xl px-6 pb-16 md:px-10 md:pb-24">
-    <div class="flex flex-col items-start gap-4 border-t border-black pt-10 md:flex-row md:items-center md:justify-between">
+    <div class="flex flex-col items-start gap-4 border-t border-ink pt-10 md:flex-row md:items-center md:justify-between">
       <p class="max-w-md font-heading text-2xl">Want to be our next success story?</p>
       <PillButton href="/request-a-quote">Request a Quote</PillButton>
     </div>

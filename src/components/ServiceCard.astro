@@ -1,0 +1,49 @@
+---
+import { Image } from "astro:assets";
+import PillButton from "./PillButton.astro";
+import type { Service } from "../site.config";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  service: Service;
+  index: number;
+  total: number;
+  tags: string[];
+  image: ImageMetadata;
+}
+
+const { service, index, total, tags, image } = Astro.props;
+---
+
+<div class="grid overflow-hidden rounded-[32px] bg-surface shadow-[0_30px_80px_rgba(23,17,13,0.18)] md:w-full md:max-w-6xl md:grid-cols-2 md:motion-safe:aspect-[16/10] md:motion-safe:min-h-[520px]">
+  <div class="flex flex-col justify-between gap-6 p-8 md:p-12">
+    <div class="flex items-center justify-between">
+      {service.featured && (
+        <span class="inline-flex items-center rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-surface">
+          Featured
+        </span>
+      )}
+      <span class="ml-auto font-body text-sm text-ink/40">
+        {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+      </span>
+    </div>
+    <div>
+      <h3 class="font-heading text-3xl leading-tight text-ink md:text-4xl">{service.title}</h3>
+      <p class="mt-4 font-body text-ink/75">{service.summary}</p>
+    </div>
+    <div>
+      <p class="font-body text-xs font-semibold uppercase tracking-wide text-ink/50">What we offer</p>
+      <div class="mt-3 grid grid-cols-2 gap-2">
+        {tags.map((tag) => (
+          <span class="rounded-full bg-muted px-4 py-2 text-center font-body text-sm text-ink/80">{tag}</span>
+        ))}
+      </div>
+    </div>
+    <PillButton href="/request-a-quote" class="self-start">
+      Request a Quote
+    </PillButton>
+  </div>
+  <div class="hidden md:block">
+    <Image src={image} alt={service.title} class="h-full w-full object-cover object-center" />
+  </div>
+</div>

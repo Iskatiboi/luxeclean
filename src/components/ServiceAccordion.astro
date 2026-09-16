@@ -9,15 +9,15 @@ const { services } = Astro.props;
 ---
 
 <!-- Native <details>/<summary> accordion: zero JS, keyboard- and screen-reader-accessible by default. -->
-<div class="border-t border-black">
+<div class="border-t border-ink">
   {
     services.map((service) => (
-      <details class="group border-b border-black">
+      <details class="group border-b border-ink">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-heading text-xl md:text-2xl">
           <span>
             {service.title}
             {service.featured && (
-              <span class="ml-3 align-middle font-body text-xs font-semibold uppercase tracking-wide text-black/60">
+              <span class="ml-3 align-middle font-body text-xs font-semibold uppercase tracking-wide text-ink/60">
                 Featured
               </span>
             )}
@@ -29,7 +29,7 @@ const { services } = Astro.props;
             &minus;
           </span>
         </summary>
-        <div class="max-w-2xl pb-6 font-body text-base leading-relaxed text-black/80">
+        <div class="max-w-2xl pb-6 font-body text-base leading-relaxed text-ink/80">
           <p>{service.details}</p>
         </div>
       </details>

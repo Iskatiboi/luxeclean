@@ -12,10 +12,10 @@ const { href, variant = "solid", class: className = "" } = Astro.props;
 const base = "inline-flex items-center justify-center rounded-full px-8 py-3 font-body text-sm transition-opacity hover:opacity-90";
 const styles =
   variant === "solid"
-    ? "bg-black text-white"
+    ? "bg-ink text-surface"
     : variant === "inverted"
-      ? "bg-white text-black"
-      : "border border-black bg-transparent text-black";
+      ? "bg-surface text-ink"
+      : "border border-ink bg-transparent text-ink";
 ---
 
 <a href={url(href)} class={`${base} ${styles} ${className}`}>

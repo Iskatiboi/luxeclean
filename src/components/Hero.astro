@@ -1,37 +1,226 @@
 ---
-import PlaceholderImage from "./PlaceholderImage.astro";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 import PillButton from "./PillButton.astro";
+import ServiceCard from "./ServiceCard.astro";
+import { site, services } from "../site.config";
+import { url } from "../lib/url";
+import heroImage from "./hero.jpg";
+import commercialConstructionImage from "./commercial & construction cleanup.jpg";
+import residentialImage from "./residential cleaning.jpg";
+import commercialImage from "./commercial cleaning.jpg";
+import airbnbImage from "./airbnb & vacation rental cleaning.jpg";
+import moveInMoveOutImage from "./move in move out cleaning.jpg";
+import deepCleaningImage from "./deep cleaning.jpg";
 
 interface Props {
   heading: string;
-  imageLabel: string;
-  ctaLabel?: string;
-  ctaHref?: string;
+  subtext: string;
+  ctaLabel: string;
+  ctaHref: string;
+  secondaryLabel: string;
+  secondaryHref: string;
+  nextHeading: string;
+  servicesHeading: string;
 }
 
-const { heading, imageLabel, ctaLabel, ctaHref } = Astro.props;
+const {
+  heading,
+  subtext,
+  ctaLabel,
+  ctaHref,
+  secondaryLabel,
+  secondaryHref,
+  nextHeading,
+  servicesHeading,
+} = Astro.props;
+
+// Short feature-tag pills per service, drafted from each service's existing
+// `details` copy in site.config.ts — edit there if you want these to be the
+// source of truth instead of this lookup.
+const featurePills: Record<string, string[]> = {
+  "commercial-construction": ["Debris Removal", "Dust Control", "Floor-to-Ceiling Wipe-Down", "Flexible Project Timelines"],
+  residential: ["Kitchen & Bath", "Dusting & Vacuuming", "Mopping", "Flexible Scheduling"],
+  commercial: ["Office Cleaning", "Storefront Cleaning", "Built Around Your Hours", "Routine Service"],
+  airbnb: ["Fast Turnovers", "Linen Service", "Restock Checks", "Consistent Standard"],
+  "move-in-move-out": ["Cabinets & Appliances", "Baseboards & Fixtures", "Move-In Ready", "Final-Walkthrough Ready"],
+  "deep-cleaning": ["Baseboards", "Interior Windows", "Appliance Interiors", "Hard-to-Reach Buildup"],
+};
+
+const serviceImages: Record<string, ImageMetadata> = {
+  "commercial-construction": commercialConstructionImage,
+  residential: residentialImage,
+  commercial: commercialImage,
+  airbnb: airbnbImage,
+  "move-in-move-out": moveInMoveOutImage,
+  "deep-cleaning": deepCleaningImage,
+};
 ---
 
-<section class="px-6 pb-6 md:px-10">
-  <div class="relative mx-auto h-[70vh] min-h-[420px] max-w-6xl overflow-hidden">
-    <div class="absolute inset-0">
-      <PlaceholderImage label={imageLabel} tone="dark" />
-    </div>
-    <!-- Dark gradient overlay for text contrast over photography -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" aria-hidden="true" />
-    <div class="relative flex h-full flex-col items-center justify-center gap-6 px-6 text-center">
-      <h1 class="animate-rise-in max-w-3xl font-heading text-4xl text-white sm:text-5xl md:text-6xl">
+<section id="hero" class="relative w-full md:min-h-[100dvh] md:overflow-hidden">
+  <div class="relative min-h-[70dvh] w-full md:absolute md:inset-0 md:min-h-[100dvh]">
+  <Image
+    id="hero-bg"
+    src={heroImage}
+    alt="Cleaning supplies and fresh linens arranged on a marble countertop in warm natural light"
+    class="absolute inset-0 h-full w-full object-cover object-center"
+    loading="eager"
+    fetchpriority="high"
+  />
+  <!-- Light scrims for text contrast over the photo, concentrated where the copy and UI sit -->
+  <div class="absolute inset-0 bg-gradient-to-r from-surface/80 via-surface/35 to-transparent" aria-hidden="true" />
+  <div class="absolute inset-0 bg-gradient-to-t from-surface/75 via-surface/10 to-transparent" aria-hidden="true" />
+
+  <div id="hero-foreground" class="relative flex h-full min-h-[70dvh] flex-col justify-between p-6 pt-28 md:min-h-[100dvh] md:p-10 md:pt-32">
+    <div class="max-w-xl">
+      <h1 class="animate-rise-in font-heading text-4xl leading-tight text-ink sm:text-5xl md:text-6xl">
         {heading}
       </h1>
-      {
-        ctaLabel && ctaHref && (
-          <div class="animate-rise-in" style="animation-delay: 0.12s">
-            <PillButton href={ctaHref} variant="inverted">
-              {ctaLabel}
-            </PillButton>
-          </div>
-        )
-      }
+      <p class="animate-rise-in mt-4 max-w-md font-body text-base text-ink/75 md:text-lg" style="animation-delay: 0.08s">
+        {subtext}
+      </p>
+      <div class="animate-rise-in mt-8 flex flex-wrap items-center gap-6" style="animation-delay: 0.16s">
+        <PillButton href={ctaHref} variant="solid">{ctaLabel}</PillButton>
+        <a href={url(secondaryHref)} class="inline-flex items-center gap-2 font-body text-sm text-ink hover:underline">
+          {secondaryLabel}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3.5 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div class="flex items-center gap-4">
+        <div class="flex -space-x-3">
+          {
+            Array.from({ length: 4 }).map(() => (
+              <span class="h-9 w-9 rounded-full border-2 border-surface bg-muted" aria-hidden="true" />
+            ))
+          }
+        </div>
+        <p class="max-w-[220px] font-body text-sm text-ink/80">
+          Trusted by homeowners and businesses across {site.serviceArea}
+        </p>
+      </div>
+
+      <div class="w-full shrink-0 rounded-2xl bg-surface p-5 shadow-[0_20px_50px_rgba(20,17,13,0.18)] sm:w-[300px]">
+        <span class="inline-flex items-center rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-surface">
+          Service Area
+        </span>
+        <p class="mt-3 font-heading text-lg leading-snug text-ink">{site.serviceArea}</p>
+        <div class="mt-4 flex items-center justify-between border-t border-ink/10 pt-4">
+          <span class="font-body text-xs text-ink/60">Residential, commercial, construction</span>
+          <a
+            href={url("/contact")}
+            aria-label="Contact us"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted text-ink transition-opacity hover:opacity-80"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div
+    id="hero-reveal"
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 px-6 text-center md:px-16"
+  >
+    {
+      nextHeading.split(" ").map((word) => (
+        <span class="word inline-block font-heading text-3xl text-ink md:text-5xl">{word}</span>
+      ))
+    }
+  </div>
+
+  <div
+    id="services-reveal"
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0 hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 px-6 text-center md:px-16"
+  >
+    {
+      servicesHeading.split(" ").map((word) => (
+        <span class="word inline-block font-heading text-3xl text-ink md:text-5xl">{word}</span>
+      ))
+    }
+  </div>
+  </div>
+
+  <!-- Mobile / reduced-motion fallback: a plain static heading, since the
+       animated version above only ever renders on desktop + motion-safe. -->
+  <h2 class="mb-8 px-6 text-center font-heading text-3xl text-ink md:motion-safe:hidden">{servicesHeading}</h2>
+
+  <div class="flex flex-col gap-8 px-6 pb-8 md:motion-safe:absolute md:motion-safe:inset-0 md:motion-safe:px-0 md:motion-safe:pb-0">
+    {
+      services.map((service, i) => (
+        <div class="service-card md:motion-safe:absolute md:motion-safe:inset-0 md:motion-safe:flex md:motion-safe:items-center md:motion-safe:justify-center md:motion-safe:p-8">
+          <ServiceCard
+            service={service}
+            index={i}
+            total={services.length}
+            tags={featurePills[service.slug] ?? []}
+            image={serviceImages[service.slug]}
+          />
+        </div>
+      ))
+    }
+  </div>
 </section>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!reduceMotion) {
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      const foreground = document.querySelector("#hero-foreground");
+      const bg = document.querySelector("#hero-bg");
+      const reveal = document.querySelector("#hero-reveal");
+      const servicesReveal = document.querySelector("#services-reveal");
+      const heroWords = gsap.utils.toArray("#hero-reveal .word");
+      const servicesWords = gsap.utils.toArray("#services-reveal .word");
+      const cards = gsap.utils.toArray(".service-card");
+
+      gsap.set([reveal, servicesReveal], { display: "flex" });
+      gsap.set([...heroWords, ...servicesWords], { opacity: 0, y: 16 });
+      gsap.set(cards, { yPercent: 100 });
+      gsap.set(bg, { willChange: "transform, filter" });
+
+      const tl = gsap.timeline({ defaults: { ease: "none" } });
+
+      tl.to(foreground, { yPercent: -120, opacity: 0, duration: 1 }, 0)
+        .addLabel("reveal", 1)
+        .to(bg, { scale: 1.15, filter: "blur(12px)", duration: 1.5 }, "reveal")
+        .to(heroWords, { opacity: 1, y: 0, stagger: 0.25, duration: 1 }, "reveal+=0.1")
+        .to(reveal, { y: -40, opacity: 0, duration: 0.4 }, "+=0.5")
+        .to(servicesWords, { opacity: 1, y: 0, stagger: 0.25, duration: 1 }, "+=0.1")
+        .to(servicesReveal, { y: -40, opacity: 0, duration: 0.4 }, "+=0.5");
+
+      cards.forEach((card, i) => {
+        tl.to(card, { yPercent: 0, duration: 1 }, i === 0 ? "+=0.15" : undefined);
+      });
+
+      ScrollTrigger.create({
+        trigger: "#hero",
+        start: "top top",
+        end: () => "+=" + tl.duration() * 100 + "%",
+        scrub: 1,
+        pin: true,
+        anticipatePin: 1,
+        animation: tl,
+      });
+    });
+
+    document.fonts.ready.then(() => ScrollTrigger.refresh());
+  }
+</script>

@@ -8,9 +8,10 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  hasHero?: boolean;
 }
 
-const { title, description = site.description, ogImage } = Astro.props;
+const { title, description = site.description, ogImage, hasHero = false } = Astro.props;
 const pageTitle = `${title} | ${site.shortName}`;
 const canonicalUrl = new URL(Astro.url.pathname, site.url);
 
@@ -71,12 +72,12 @@ const jsonLd = {
   <body class="min-h-screen flex flex-col">
     <a
       href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded-full"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-surface focus:text-ink focus:px-4 focus:py-2 focus:rounded-full"
     >
       Skip to content
     </a>
     <Header />
-    <main id="main-content" class="flex-1">
+    <main id="main-content" class:list={["flex-1", !hasHero && "pt-28"]}>
       <slot />
     </main>
     <Footer />

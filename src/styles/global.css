@@ -4,12 +4,13 @@
    this @import is a fallback only used if the preload link is stripped. */
 
 @theme {
-  /* Measured from the live site (getComputedStyle), not guessed from screenshots */
-  --color-bg: #eaeaee;
-  --color-ink: #141414;
-  --color-ink-black: #000000;
-  --color-white: #ffffff;
-  --color-overlay: #000000;
+  /* Luxury palette: black/white primary, beige/champagne as a minor accent */
+  --color-bg: #faf8f4;
+  --color-surface: #ffffff;
+  --color-ink: #17130f;
+  --color-accent: #c9a876;
+  --color-muted: #e8e1d3;
+  --color-shade: #14110d;
 
   --font-heading: "Young Serif", "Iowan Old Style", Georgia, serif;
   --font-body: "Bitter", Georgia, serif;
@@ -39,12 +40,12 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-ink-black);
+    outline: 2px solid var(--color-ink);
     outline-offset: 3px;
   }
 
   ::selection {
-    background-color: var(--color-ink-black);
+    background-color: var(--color-ink);
     color: var(--color-bg);
   }
 }

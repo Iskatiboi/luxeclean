@@ -62,13 +62,13 @@ export default function QuoteForm() {
         <legend className={labelClass}>Name</legend>
         <div className="mt-2 grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="q-firstName" className="mb-1 block text-xs text-black/60">
+            <label htmlFor="q-firstName" className="mb-1 block text-xs text-ink/60">
               First Name (required)
             </label>
             <input id="q-firstName" name="firstName" type="text" autoComplete="given-name" className={inputClass} aria-invalid={Boolean(errors.firstName)} />
           </div>
           <div>
-            <label htmlFor="q-lastName" className="mb-1 block text-xs text-black/60">
+            <label htmlFor="q-lastName" className="mb-1 block text-xs text-ink/60">
               Last Name (required)
             </label>
             <input id="q-lastName" name="lastName" type="text" autoComplete="family-name" className={inputClass} aria-invalid={Boolean(errors.lastName)} />
@@ -82,7 +82,7 @@ export default function QuoteForm() {
             Email (required)
           </label>
           <input id="q-email" name="email" type="email" autoComplete="email" className={`${inputClass} mt-2`} aria-invalid={Boolean(errors.email)} />
-          {errors.email && <p className="mt-1 text-xs text-black/70">{errors.email}</p>}
+          {errors.email && <p className="mt-1 text-xs text-ink/70">{errors.email}</p>}
         </div>
         <div>
           <label htmlFor="q-phone" className={labelClass}>
@@ -146,7 +146,7 @@ export default function QuoteForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="self-start rounded-full bg-black px-8 py-3 font-body text-sm text-white disabled:opacity-60"
+        className="self-start rounded-full bg-ink px-8 py-3 font-body text-sm text-surface disabled:opacity-60"
       >
         {status === "submitting" ? "Sending…" : "Request My Quote"}
       </button>
@@ -154,7 +154,7 @@ export default function QuoteForm() {
       <div id="quote-form-status" role="status" aria-live="polite" className="font-body text-sm">
         {status === "success" && <p>Thanks — your quote request has been sent. We'll follow up shortly.</p>}
         {status === "error" && !FORM_ENDPOINT && (
-          <p className="text-black/70">
+          <p className="text-ink/70">
             Form submission isn't connected to an email service yet (no PUBLIC_FORM_ENDPOINT configured). See README.
           </p>
         )}
