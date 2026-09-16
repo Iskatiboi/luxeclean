@@ -1,0 +1,30 @@
+---
+import Layout from "../layouts/Layout.astro";
+import QuoteForm from "../components/QuoteForm.tsx";
+import PlaceholderImage from "../components/PlaceholderImage.astro";
+import { site } from "../site.config";
+---
+
+<Layout
+  title="Request a Quote"
+  description={`Request a free cleaning quote from Luxury Duo Cleaning LLC, serving ${site.serviceArea}.`}
+>
+  <section class="grid md:grid-cols-2">
+    <div class="order-1">
+      <div class="aspect-[4/3] md:aspect-auto md:h-full">
+        <PlaceholderImage label="request a quote — editorial shot" tone="dark" />
+      </div>
+    </div>
+    <div class="order-2 flex flex-col justify-center gap-6 px-6 py-14 md:px-14 md:py-20">
+      <div>
+        <h1 class="font-heading text-3xl md:text-4xl">Request a Quote</h1>
+        <p class="mt-3 max-w-md font-body text-black/80">
+          Tell us about your space and what you need done. The more detail you give us, the more accurate
+          your quote will be — this works for a single home, a recurring office contract, or a
+          post-construction cleanup.
+        </p>
+      </div>
+      <QuoteForm client:load />
+    </div>
+  </section>
+</Layout>

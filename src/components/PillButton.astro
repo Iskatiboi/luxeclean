@@ -1,0 +1,21 @@
+---
+interface Props {
+  href: string;
+  variant?: "solid" | "outline" | "inverted";
+  class?: string;
+}
+
+const { href, variant = "solid", class: className = "" } = Astro.props;
+
+const base = "inline-flex items-center justify-center rounded-full px-8 py-3 font-body text-sm transition-opacity hover:opacity-90";
+const styles =
+  variant === "solid"
+    ? "bg-black text-white"
+    : variant === "inverted"
+      ? "bg-white text-black"
+      : "border border-black bg-transparent text-black";
+---
+
+<a href={href} class={`${base} ${styles} ${className}`}>
+  <slot />
+</a>

@@ -1,0 +1,53 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SplitPanel from "../components/SplitPanel.astro";
+import PillButton from "../components/PillButton.astro";
+import { site } from "../site.config";
+---
+
+<Layout
+  title="About Us"
+  description={`Learn about Luxury Duo Cleaning LLC, a professional cleaning company serving ${site.serviceArea}.`}
+>
+  <section class="mx-auto max-w-3xl px-6 pb-4 pt-16 text-center md:pt-24">
+    <h1 class="font-heading text-4xl md:text-5xl">Who we are</h1>
+  </section>
+
+  <SplitPanel heading="Where cleanliness meets care" imageLabel="about — team at work" imageSide="left">
+    <p>
+      At Luxury Duo Cleaning, we believe a clean space creates peace of mind. Our dedicated team provides
+      reliable, top-quality cleaning services for homes and businesses alike across {site.serviceArea}.
+    </p>
+    <p class="mt-4">
+      Whether you need routine maintenance, a deep clean, a move-in/move-out turnaround, or pre- and
+      post-construction cleanup, we tailor every job to fit your space and your timeline.
+    </p>
+    <p class="mt-4">Let us handle the mess, so you can focus on what matters most.</p>
+  </SplitPanel>
+
+  <section class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+    <h2 class="font-heading text-3xl md:text-4xl">Who we work with</h2>
+    <div class="mt-8 grid gap-8 md:grid-cols-2">
+      <div>
+        <h3 class="font-heading text-xl">Homeowners &amp; hosts</h3>
+        <p class="mt-2 font-body text-black/75">
+          Residential cleaning, deep cleans, move-in/move-out turnovers, and Airbnb turnarounds between guests.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-heading text-xl">Contractors &amp; property managers</h3>
+        <p class="mt-2 font-body text-black/75">
+          Commercial cleaning and pre-/post-construction cleanup, scheduled around your project or leasing
+          timeline.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-16 md:px-10 md:pb-24">
+    <div class="flex flex-col items-start gap-4 border-t border-black pt-10 md:flex-row md:items-center md:justify-between">
+      <p class="max-w-md font-heading text-2xl">Ready to see the difference?</p>
+      <PillButton href="/request-a-quote">Request a Quote</PillButton>
+    </div>
+  </section>
+</Layout>

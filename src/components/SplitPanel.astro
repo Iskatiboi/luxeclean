@@ -1,0 +1,28 @@
+---
+import PlaceholderImage from "./PlaceholderImage.astro";
+
+interface Props {
+  heading: string;
+  imageLabel: string;
+  imageSide?: "left" | "right";
+  tone?: "light" | "dark";
+}
+
+const { heading, imageLabel, imageSide = "right", tone = "light" } = Astro.props;
+---
+
+<section class="grid md:grid-cols-2">
+  <div class={`order-1 ${imageSide === "left" ? "md:order-1" : "md:order-2"}`}>
+    <div class="aspect-[4/3] md:aspect-auto md:h-full">
+      <PlaceholderImage label={imageLabel} tone={tone} />
+    </div>
+  </div>
+  <div
+    class={`order-2 flex flex-col justify-center gap-5 px-6 py-14 md:px-14 md:py-20 ${imageSide === "left" ? "md:order-2" : "md:order-1"}`}
+  >
+    <h2 class="font-heading text-3xl md:text-4xl">{heading}</h2>
+    <div class="max-w-md font-body text-base leading-relaxed text-black/80">
+      <slot />
+    </div>
+  </div>
+</section>

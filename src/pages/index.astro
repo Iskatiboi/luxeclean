@@ -1,0 +1,100 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import SplitPanel from "../components/SplitPanel.astro";
+import ServiceHighlightCard from "../components/ServiceHighlightCard.astro";
+import PlaceholderImage from "../components/PlaceholderImage.astro";
+import TestimonialCard from "../components/TestimonialCard.astro";
+import PillButton from "../components/PillButton.astro";
+import { site, placeholderTestimonials } from "../site.config";
+---
+
+<Layout title="Home">
+  <Hero
+    heading="Discover the Sparkling Side of Clean"
+    imageLabel="hero — editorial cleaning shot"
+    ctaLabel="Get a Free Quote"
+    ctaHref="/request-a-quote"
+  />
+
+  <section class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+    <div class="mb-10 max-w-2xl">
+      <p class="font-body text-xs font-semibold uppercase tracking-widest text-black/50">
+        Now booking commercial &amp; construction clients
+      </p>
+      <h2 class="mt-3 font-heading text-3xl md:text-4xl">Built for job sites, not just living rooms</h2>
+      <p class="mt-4 font-body text-black/75">
+        Contractors, property managers, and Airbnb hosts trust Luxury Duo Cleaning for reliable turnarounds
+        alongside our full residential lineup.
+      </p>
+    </div>
+    <div class="grid gap-8 md:grid-cols-2">
+      <ServiceHighlightCard
+        eyebrow="For contractors & property managers"
+        title="Commercial & Construction Cleanup"
+        description="Pre- and post-construction cleaning, office turnovers, and unit make-readies scheduled around your project timeline."
+        ctaLabel="Request a Commercial Quote"
+        ctaHref="/request-a-quote"
+        imageLabel="commercial / construction cleanup"
+      />
+      <ServiceHighlightCard
+        eyebrow="For homeowners & hosts"
+        title="Residential & Airbnb Cleaning"
+        description="Recurring home cleaning and fast, reliable turnovers between guests, done to a consistent standard."
+        ctaLabel="Request a Residential Quote"
+        ctaHref="/request-a-quote"
+        imageLabel="residential / airbnb cleaning"
+      />
+    </div>
+  </section>
+
+  <SplitPanel heading="Explore our services" imageLabel="services — cleaning tools" imageSide="right">
+    <p>
+      From routine residential upkeep to full construction cleanup, we tailor every job to fit the space and
+      the timeline.
+    </p>
+    <PillButton href="/services" class="mt-6">Learn more</PillButton>
+  </SplitPanel>
+
+  <SplitPanel heading="Get to know us" imageLabel="about — suds and gloves" imageSide="left">
+    <p>
+      Luxury Duo Cleaning LLC provides reliable, top-quality cleaning for homes and businesses across
+      {site.serviceArea}. Whether it's routine maintenance, a deep clean, or a post-construction detail
+      job, we tailor every visit to fit your needs.
+    </p>
+    <PillButton href="/about" class="mt-6">Learn more</PillButton>
+  </SplitPanel>
+
+  <section class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+    <h2 class="font-heading text-3xl md:text-4xl">Recent work</h2>
+    <p class="mt-3 max-w-xl font-body text-black/70">
+      Two completed jobs, ready to drop in real before/after photos — see
+      <code class="text-xs">README.md</code> for where these files go.
+    </p>
+    <div class="mt-8 grid gap-8 md:grid-cols-2">
+      <div class="aspect-[4/3]">
+        <PlaceholderImage label="recent work — job 1" />
+      </div>
+      <div class="aspect-[4/3]">
+        <PlaceholderImage label="recent work — job 2" />
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+    <div class="flex items-baseline justify-between gap-6">
+      <h2 class="font-heading text-3xl md:text-4xl">What clients say</h2>
+      <a href="/testimonials" class="shrink-0 font-body text-sm underline underline-offset-4">
+        See all testimonials
+      </a>
+    </div>
+    <div class="mt-8 divide-y divide-black">
+      {placeholderTestimonials.slice(0, 2).map((t) => <TestimonialCard quote={t.quote} author={t.author} />)}
+    </div>
+  </section>
+
+  <SplitPanel heading="Ready for a cleaner space?" imageLabel="contact — editorial shot" imageSide="right">
+    <p>Tell us about your space and we'll get back to you with a free, fast quote.</p>
+    <PillButton href="/request-a-quote" class="mt-6">Request a Quote</PillButton>
+  </SplitPanel>
+</Layout>

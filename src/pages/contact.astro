@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ContactForm from "../components/ContactForm.tsx";
+import PlaceholderImage from "../components/PlaceholderImage.astro";
+import { site } from "../site.config";
+---
+
+<Layout title="Contact" description={`Contact Luxury Duo Cleaning LLC, serving ${site.serviceArea}.`}>
+  <section class="grid md:grid-cols-2">
+    <div class="order-2 flex flex-col justify-center gap-6 px-6 py-14 md:order-1 md:px-14 md:py-20">
+      <div>
+        <h1 class="font-heading text-3xl md:text-4xl">Contact us</h1>
+        <p class="mt-3 max-w-md font-body text-black/80">
+          Have a question or a quick request? Send us a message and we'll be in touch shortly. For a formal
+          quote, use our <a href="/request-a-quote" class="underline underline-offset-4">Request a Quote</a> page instead.
+        </p>
+      </div>
+      <ContactForm client:load />
+    </div>
+    <div class="order-1 md:order-2">
+      <div class="aspect-[4/3] md:aspect-auto md:h-full">
+        <PlaceholderImage label="contact — silhouette editorial shot" tone="dark" />
+      </div>
+    </div>
+  </section>
+</Layout>

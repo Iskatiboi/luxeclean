@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* Google Fonts loaded + preloaded via <link> in Layout.astro for performance;
+   this @import is a fallback only used if the preload link is stripped. */
+
+@theme {
+  /* Measured from the live site (getComputedStyle), not guessed from screenshots */
+  --color-bg: #eaeaee;
+  --color-ink: #141414;
+  --color-ink-black: #000000;
+  --color-white: #ffffff;
+  --color-overlay: #000000;
+
+  --font-heading: "Young Serif", "Iowan Old Style", Georgia, serif;
+  --font-body: "Bitter", Georgia, serif;
+
+  --radius-pill: 300px;
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    font-weight: 400;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink-black);
+    outline-offset: 3px;
+  }
+}

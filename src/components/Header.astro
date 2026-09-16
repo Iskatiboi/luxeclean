@@ -1,0 +1,48 @@
+---
+import { site } from "../site.config";
+import MobileNav from "./MobileNav.tsx";
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+---
+
+<header class="bg-[var(--color-bg)]">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6 md:px-10">
+    <a href="/" class="font-heading text-xl font-bold tracking-tight md:text-2xl">
+      {site.shortName}
+    </a>
+
+    <nav aria-label="Primary" class="hidden md:block">
+      <ul class="flex items-center gap-8 font-body text-sm">
+        {
+          site.nav.slice(1).map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                class="underline-offset-4 hover:underline aria-[current=page]:underline"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href={site.primaryCta.href}
+            class="rounded-full bg-black px-6 py-2.5 text-white hover:opacity-90"
+          >
+            {site.primaryCta.label}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <MobileNav
+      client:load
+      items={site.nav.slice(1)}
+      ctaLabel={site.primaryCta.label}
+      ctaHref={site.primaryCta.href}
+    />
+  </div>
+</header>

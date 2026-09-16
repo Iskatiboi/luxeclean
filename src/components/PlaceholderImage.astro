@@ -1,0 +1,25 @@
+---
+// Stand-in for real photography. The client only has real photos from two
+// completed jobs (used in the "Recent Work" section on the homepage) — every
+// other image slot on the site is a clearly-marked placeholder like this one,
+// sized and positioned for real neutral/editorial stock photography later.
+interface Props {
+  label: string;
+  class?: string;
+  tone?: "light" | "dark";
+}
+
+const { label, class: className = "", tone = "light" } = Astro.props;
+const toneClasses =
+  tone === "dark" ? "bg-[#3a3a3a] text-white/70" : "bg-[#c9c7cd] text-black/60";
+---
+
+<div
+  class={`flex h-full w-full items-center justify-center ${toneClasses} ${className}`}
+  role="img"
+  aria-label={label}
+>
+  <span class="px-6 text-center font-body text-xs uppercase tracking-widest">
+    Placeholder photo — {label}
+  </span>
+</div>
