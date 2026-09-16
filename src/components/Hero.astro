@@ -20,14 +20,16 @@ const { heading, imageLabel, ctaLabel, ctaHref } = Astro.props;
     <!-- Dark gradient overlay for text contrast over photography -->
     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" aria-hidden="true" />
     <div class="relative flex h-full flex-col items-center justify-center gap-6 px-6 text-center">
-      <h1 class="max-w-3xl font-heading text-4xl text-white sm:text-5xl md:text-6xl">
+      <h1 class="animate-rise-in max-w-3xl font-heading text-4xl text-white sm:text-5xl md:text-6xl">
         {heading}
       </h1>
       {
         ctaLabel && ctaHref && (
-          <PillButton href={ctaHref} variant="inverted">
-            {ctaLabel}
-          </PillButton>
+          <div class="animate-rise-in" style="animation-delay: 0.12s">
+            <PillButton href={ctaHref} variant="inverted">
+              {ctaLabel}
+            </PillButton>
+          </div>
         )
       }
     </div>
