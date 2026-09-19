@@ -295,6 +295,12 @@ const averageRating = Math.round(
         },
         i === 0 ? "+=0.15" : undefined,
       );
+      // Once a card has fully covered the one beneath it, hide that one. The cards
+      // are identical rounded shapes in the same spot, so the anti-aliased pixels
+      // on each curved edge let a little of every card below show through, and
+      // the photo halves stack up into dark specks along the corners. A zero-length
+      // set adds no scroll distance and reverses cleanly when scrolling back up.
+      if (i > 0) tl.set(cards[i - 1], { autoAlpha: 0 });
     });
 
     // A short beat on the settled panel before the page moves on. It is deliberately

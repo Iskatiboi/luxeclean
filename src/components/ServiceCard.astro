@@ -18,7 +18,7 @@ const { service, index, total, tags, image } = Astro.props;
 {/* `max-h` only bites on short laptop screens (under ~900px tall), where a 16:10
     card at full width would fill the viewport and slide under the fixed header.
     Padding shrinks with viewport height for the same reason, capped at p-12. */}
-<div class="grid overflow-hidden rounded-[32px] bg-surface shadow-[0_30px_80px_rgba(23,17,13,0.18)] md:w-full md:max-w-6xl md:grid-cols-2 pinned:aspect-[16/10] pinned:max-h-[calc(100dvh-11rem)]">
+<div class="grid overflow-hidden rounded-[32px] bg-surface md:w-full md:max-w-6xl md:grid-cols-2 pinned:aspect-[16/10] pinned:max-h-[calc(100dvh-11rem)]">
   <div class="flex flex-col justify-between gap-6 p-8 md:p-12 pinned:gap-[min(1.5rem,2.5vh)] pinned:p-[min(3rem,5vh)]">
     <div class="flex items-center justify-between">
       {service.featured && (
