@@ -12,7 +12,7 @@ const { services } = Astro.props;
 <div class="border-t border-ink">
   {
     services.map((service) => (
-      <details class="group border-b border-ink">
+      <details id={service.slug} class="group scroll-mt-28 border-b border-ink">
         <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-heading text-xl md:text-2xl">
           <span>
             {service.title}

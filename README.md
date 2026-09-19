@@ -68,18 +68,29 @@ Everything below is a clearly-marked placeholder in the code — search for
   contact email is on `luxuryduocleaning.com`. `site.url` in
   `src/site.config.ts` is a placeholder until you confirm which one is
   canonical (affects page titles, canonical `<link>`, OG tags, JSON-LD).
-- **Footer content** — the live site's footer was never filled in (it still
-  reads "Your Site Title"). `src/components/Footer.astro` has a reasonable
-  placeholder structure; confirm real copy and whether TikTok (present on the
-  live site's footer, not mentioned in the original brief) should be linked
-  alongside Instagram.
-- **Real photography** — every image slot renders `PlaceholderImage.astro`
-  (a labeled gray box) instead of a photo. The homepage "Recent work" section
-  (`src/pages/index.astro`) has two slots sized for the client's two real
-  completed-job photos — replace those `PlaceholderImage` usages with
-  `astro:assets`'s `<Image />` once files are supplied.
-- **Testimonials** — `src/site.config.ts` → `placeholderTestimonials` has 3
-  dummy quotes. Replace with real ones on the Testimonials page and homepage.
+- **Footer content** — `src/components/Footer.astro` is now built out (brand,
+  services, company, contact, social). Two things still need confirming: whether
+  TikTok, which is on the live site's footer but was not in the brief, should be
+  linked alongside Instagram, and `site.instagramUrl`, which currently points at
+  instagram.com with no handle. The footer has **no phone row** on purpose; add
+  one only once a real number exists (see above).
+- **Real photography** — the homepage is done: `src/components/hero.jpg` plus
+  one photo per service feed the hero and its scroll-stacked service cards.
+  The remaining placeholder slots are on the About, Services, Contact, and
+  Request-a-Quote pages, where `PlaceholderImage.astro` still renders a labeled
+  gray box. Replace each with `astro:assets`'s `<Image />` as files arrive. The
+  client's two completed-job photos no longer have a home on the homepage (the
+  "Recent work" section was removed); the About page is the natural place for
+  them.
+- **Testimonials** — `src/site.config.ts` → `sampleTestimonials` holds 5 sample
+  quotes with names, roles, and ratings. They are **not real reviews**. Both the
+  homepage carousel and the Testimonials page label them as samples in visible
+  copy. Replace the whole array with real Google reviews before launch, and
+  delete the "Sample copy" pill in `TestimonialCarousel.astro` plus the sample
+  wording in `src/pages/testimonials.astro` at the same time.
+- **Service area** — `site.serviceAreaCities` lists the 12 towns shown as chips
+  beside the map. This is a public promise of coverage, so confirm it with the
+  client before adding to it. `site.mapQuery` drives the map embed.
 - **Form backend** — the Contact and Request-a-Quote forms validate and show
   submit feedback, but don't send anywhere until `PUBLIC_FORM_ENDPOINT` is
   set (see `.env.example`). Point it at Formspree, Netlify Forms, or your own

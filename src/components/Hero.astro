@@ -3,8 +3,10 @@ import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import PillButton from "./PillButton.astro";
 import ServiceCard from "./ServiceCard.astro";
-import { site, services } from "../site.config";
+import StoryPanel from "./StoryPanel.astro";
+import { site, services, sampleTestimonials } from "../site.config";
 import { url } from "../lib/url";
+import { initials } from "../lib/initials";
 import heroImage from "./hero.jpg";
 import commercialConstructionImage from "./commercial & construction cleanup.jpg";
 import residentialImage from "./residential cleaning.jpg";
@@ -16,6 +18,7 @@ import deepCleaningImage from "./deep cleaning.jpg";
 interface Props {
   heading: string;
   subtext: string;
+  trustLine: string;
   ctaLabel: string;
   ctaHref: string;
   secondaryLabel: string;
@@ -27,6 +30,7 @@ interface Props {
 const {
   heading,
   subtext,
+  trustLine,
   ctaLabel,
   ctaHref,
   secondaryLabel,
@@ -55,10 +59,25 @@ const serviceImages: Record<string, ImageMetadata> = {
   "move-in-move-out": moveInMoveOutImage,
   "deep-cleaning": deepCleaningImage,
 };
+
+// The avatar stack is drawn from the same list as the testimonials section, so
+// swapping the samples for real Google reviews updates both at once. Four tones
+// keep the overlap reading as four different people rather than one repeated.
+const reviewers = sampleTestimonials.slice(0, 4);
+const avatarTones = ["bg-ink text-surface", "bg-accent text-ink", "bg-muted text-ink", "bg-ink/85 text-surface"];
+const averageRating = Math.round(
+  sampleTestimonials.reduce((sum, t) => sum + t.rating, 0) / sampleTestimonials.length,
+);
 ---
 
-<section id="hero" class="relative w-full md:min-h-[100dvh] md:overflow-hidden">
-  <div class="relative min-h-[70dvh] w-full md:absolute md:inset-0 md:min-h-[100dvh]">
+{/* `pinned:overflow-hidden` is load-bearing, not just visual tidiness: it clips the
+    curtain while it is parked a full viewport below, which is what keeps that
+    panel out of mouse hit-testing over the section that follows. The `pinned:`
+    variant is defined in global.css. */}
+<section id="hero" class="relative w-full md:min-h-[100dvh] pinned:overflow-hidden">
+  {/* `.hero-intro` copy is hidden until the script brings it in; without JS, show it. */}
+  <noscript><style is:inline>#hero .hero-intro { opacity: 1 !important; }</style></noscript>
+  <div class="relative min-h-[70dvh] w-full md:min-h-[100dvh] pinned:absolute pinned:inset-0">
   <Image
     id="hero-bg"
     src={heroImage}
@@ -71,15 +90,30 @@ const serviceImages: Record<string, ImageMetadata> = {
   <div class="absolute inset-0 bg-gradient-to-r from-surface/80 via-surface/35 to-transparent" aria-hidden="true" />
   <div class="absolute inset-0 bg-gradient-to-t from-surface/75 via-surface/10 to-transparent" aria-hidden="true" />
 
-  <div id="hero-foreground" class="relative flex h-full min-h-[70dvh] flex-col justify-between p-6 pt-28 md:min-h-[100dvh] md:p-10 md:pt-32">
+  {/* Desktop type and spacing scale with viewport HEIGHT, capped at their original
+      sizes. On a tall screen nothing changes; on a 1366x768 or 1280x720 laptop the
+      column would otherwise run 25px past the fold and into the bottom row. */}
+  <div id="hero-foreground" class="relative flex h-full min-h-[70dvh] flex-col justify-between gap-6 p-6 pt-28 md:min-h-[100dvh] md:p-10 md:pt-[min(8rem,14vh)] md:pb-[min(2.5rem,4vh)]">
     <div class="max-w-xl">
-      <h1 class="animate-rise-in font-heading text-4xl leading-tight text-ink sm:text-5xl md:text-6xl">
+      <h1 class="hero-intro font-heading text-4xl leading-tight text-ink sm:text-5xl md:text-[min(3.75rem,6.5vh)]">
         {heading}
       </h1>
-      <p class="animate-rise-in mt-4 max-w-md font-body text-base text-ink/75 md:text-lg" style="animation-delay: 0.08s">
+      <div class="hero-intro mt-5 flex max-w-md items-start gap-3">
+        <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-surface" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1.8 13 3.6v4c0 3.1-2.1 5.4-5 6.6-2.9-1.2-5-3.5-5-6.6v-4l5-1.8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="m5.8 8 1.5 1.5 2.9-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <p class="font-body text-sm leading-snug">
+          <span class="block text-xs font-semibold uppercase tracking-[0.16em] text-ink">Licensed &amp; Insured</span>
+          <span class="mt-1 block text-pretty text-ink/75">{trustLine}</span>
+        </p>
+      </div>
+      <p class="hero-intro mt-4 max-w-md font-body text-base text-ink/75 md:text-lg">
         {subtext}
       </p>
-      <div class="animate-rise-in mt-8 flex flex-wrap items-center gap-6" style="animation-delay: 0.16s">
+      <div class="hero-intro mt-8 flex flex-wrap items-center gap-6 md:mt-[min(2rem,3.5vh)]">
         <PillButton href={ctaHref} variant="solid">{ctaLabel}</PillButton>
         <a href={url(secondaryHref)} class="inline-flex items-center gap-2 font-body text-sm text-ink hover:underline">
           {secondaryLabel}
@@ -92,16 +126,33 @@ const serviceImages: Record<string, ImageMetadata> = {
 
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div class="flex items-center gap-4">
-        <div class="flex -space-x-3">
+        <div class="flex -space-x-3" aria-hidden="true">
           {
-            Array.from({ length: 4 }).map(() => (
-              <span class="h-9 w-9 rounded-full border-2 border-surface bg-muted" aria-hidden="true" />
+            reviewers.map((t, i) => (
+              <span
+                class:list={[
+                  "flex h-10 w-10 items-center justify-center rounded-full border-2 border-surface font-body text-[11px] font-semibold tracking-wide",
+                  avatarTones[i % avatarTones.length],
+                ]}
+              >
+                {initials(t.author)}
+              </span>
             ))
           }
         </div>
-        <p class="max-w-[220px] font-body text-sm text-ink/80">
-          Trusted by homeowners and businesses across {site.serviceArea}
-        </p>
+        <div>
+          <span class="sr-only">Rated {averageRating} out of 5</span>
+          <div class="flex gap-1 text-accent" aria-hidden="true">
+            {Array.from({ length: averageRating }).map(() => (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 1.2l1.95 4.28 4.65.5-3.47 3.13.96 4.59L8 11.4l-4.09 2.3.96-4.59L1.4 5.98l4.65-.5L8 1.2z" />
+              </svg>
+            ))}
+          </div>
+          <p class="mt-1.5 max-w-[220px] font-body text-sm leading-snug text-ink/80">
+            Trusted by homeowners and businesses across {site.serviceArea}
+          </p>
+        </div>
       </div>
 
       <div class="w-full shrink-0 rounded-2xl bg-surface p-5 shadow-[0_20px_50px_rgba(20,17,13,0.18)] sm:w-[300px]">
@@ -150,14 +201,26 @@ const serviceImages: Record<string, ImageMetadata> = {
   </div>
   </div>
 
-  <!-- Mobile / reduced-motion fallback: a plain static heading, since the
-       animated version above only ever renders on desktop + motion-safe. -->
-  <h2 class="mb-8 px-6 text-center font-heading text-3xl text-ink md:motion-safe:hidden">{servicesHeading}</h2>
+  <!-- #hero-reveal above is aria-hidden (it is split into per-word spans), so this
+       is the only copy of that message in the accessibility tree and for search. -->
+  <h2 class="sr-only">{nextHeading}</h2>
 
-  <div class="flex flex-col gap-8 px-6 pb-8 md:motion-safe:absolute md:motion-safe:inset-0 md:motion-safe:px-0 md:motion-safe:pb-0">
+  <!-- Visible heading on mobile and for reduced motion, where the animated version
+       never renders. On desktop with motion it goes sr-only rather than hidden, so
+       the document still has a real heading here instead of only aria-hidden spans. -->
+  <h2 class="mb-8 px-6 text-center font-heading text-3xl text-ink pinned:sr-only">{servicesHeading}</h2>
+
+  {/* On desktop this wrapper is a full-screen box laid over the hero copy. It never
+      moves (only the cards inside it slide), so it has to let clicks through or the
+      hero's buttons are dead. Each card opts back in once it has slid into view.
+
+      The cards also start `invisible`: they are absolutely positioned over the hero
+      in CSS, and would otherwise paint there for a moment on load before the script
+      parks them below. The script makes them visible only once they are parked. */}
+  <div class="flex flex-col gap-8 px-6 pb-8 pinned:pointer-events-none pinned:absolute pinned:inset-0 pinned:px-0 pinned:pb-0">
     {
       services.map((service, i) => (
-        <div class="service-card md:motion-safe:absolute md:motion-safe:inset-0 md:motion-safe:flex md:motion-safe:items-center md:motion-safe:justify-center md:motion-safe:p-8">
+        <div class="service-card pinned:pointer-events-auto pinned:invisible pinned:absolute pinned:inset-0 pinned:flex pinned:items-center pinned:justify-center pinned:p-8">
           <ServiceCard
             service={service}
             index={i}
@@ -169,6 +232,21 @@ const serviceImages: Record<string, ImageMetadata> = {
       ))
     }
   </div>
+
+  <!-- Closes the pinned sequence by drawing the page background up over the photo,
+       carrying the story panel with it, so the pin releases onto the same colour the
+       rest of the page sits on and there is no seam. Last child on purpose: these
+       siblings have no z-index, so paint order is DOM order and anything earlier
+       would sit under the cards.
+
+       The three `pinned:` classes gate this the same way the cards are gated.
+       `hidden` is scoped rather than unconditional so the panel still renders in normal
+       flow on mobile and under reduced motion, while desktop avoids a flash of a
+       full-bleed panel covering the hero in the moment before the script parks it
+       off-screen. The script swaps it to `display: block` and `yPercent: 100`. -->
+  <div id="hero-curtain" class="w-full bg-bg pinned:absolute pinned:inset-0 pinned:hidden">
+    <StoryPanel />
+  </div>
 </section>
 
 <script>
@@ -177,50 +255,120 @@ const serviceImages: Record<string, ImageMetadata> = {
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const mm = gsap.matchMedia();
 
-  if (!reduceMotion) {
-    const mm = gsap.matchMedia();
+  // Reduced motion belongs in the GSAP query, not a one-time matchMedia read. The
+  // `pinned:` classes below are live CSS: if the OS setting flips mid-session
+  // Tailwind returns the cards to normal flow, and a stale inline `yPercent: 100`
+  // would leave all six parked off-screen. Inside the query, GSAP reverts itself.
+  // Must match the `pinned` custom variant in global.css exactly.
+  const PINNED_QUERY =
+    "(min-width: 1200px) and (min-height: 600px) and (prefers-reduced-motion: no-preference), " +
+    "(min-width: 1024px) and (min-height: 640px) and (prefers-reduced-motion: no-preference)";
 
-    mm.add("(min-width: 768px)", () => {
-      const foreground = document.querySelector("#hero-foreground");
-      const bg = document.querySelector("#hero-bg");
-      const reveal = document.querySelector("#hero-reveal");
-      const servicesReveal = document.querySelector("#services-reveal");
-      const heroWords = gsap.utils.toArray("#hero-reveal .word");
-      const servicesWords = gsap.utils.toArray("#services-reveal .word");
-      const cards = gsap.utils.toArray(".service-card");
+  mm.add(PINNED_QUERY, () => {
+    const foreground = document.querySelector("#hero-foreground");
+    const bg = document.querySelector("#hero-bg");
+    const reveal = document.querySelector("#hero-reveal");
+    const servicesReveal = document.querySelector("#services-reveal");
+    const curtain = document.querySelector("#hero-curtain");
+    const heroWords = gsap.utils.toArray("#hero-reveal .word");
+    const servicesWords = gsap.utils.toArray("#services-reveal .word");
+    const cards = gsap.utils.toArray<HTMLElement>(".service-card");
 
-      gsap.set([reveal, servicesReveal], { display: "flex" });
-      gsap.set([...heroWords, ...servicesWords], { opacity: 0, y: 16 });
-      gsap.set(cards, { yPercent: 100 });
-      gsap.set(bg, { willChange: "transform, filter" });
+    gsap.set([reveal, servicesReveal], { display: "flex" });
+    gsap.set([...heroWords, ...servicesWords], { opacity: 0, y: 16 });
+    gsap.set(cards, { yPercent: 100, visibility: "visible" });
+    gsap.set(curtain, { display: "block", yPercent: 100 });
+    gsap.set(bg, { willChange: "transform, filter" });
 
-      const tl = gsap.timeline({ defaults: { ease: "none" } });
+    // Clipping keeps the parked curtain out of mouse reach but not out of tab order.
+    // Without this a keyboard visitor tabs from the hero into an off-screen link, and
+    // focusing inside a pinned overflow:hidden container makes the browser scroll that
+    // container to chase it, offsetting everything GSAP has pinned with no way back.
+    curtain?.setAttribute("inert", "");
+    // The parked cards have the same problem, so each one is only focusable once landed.
+    cards.forEach((card) => card.setAttribute("inert", ""));
 
-      tl.to(foreground, { yPercent: -120, opacity: 0, duration: 1 }, 0)
-        .addLabel("reveal", 1)
-        .to(bg, { scale: 1.15, filter: "blur(12px)", duration: 1.5 }, "reveal")
-        .to(heroWords, { opacity: 1, y: 0, stagger: 0.25, duration: 1 }, "reveal+=0.1")
-        .to(reveal, { y: -40, opacity: 0, duration: 0.4 }, "+=0.5")
-        .to(servicesWords, { opacity: 1, y: 0, stagger: 0.25, duration: 1 }, "+=0.1")
-        .to(servicesReveal, { y: -40, opacity: 0, duration: 0.4 }, "+=0.5");
+    const tl = gsap.timeline({ defaults: { ease: "none" } });
+    tl.to(foreground, { yPercent: -120, opacity: 0, duration: 0.8 }, 0)
+      .addLabel("reveal", 0.8)
+      .to(bg, { scale: 1.15, filter: "blur(12px)", duration: 1.2 }, "reveal")
+      .to(heroWords, { opacity: 1, y: 0, stagger: 0.14, duration: 0.8 }, "reveal+=0.1")
+      .to(reveal, { y: -40, opacity: 0, duration: 0.3 }, "+=0.35")
+      .to(servicesWords, { opacity: 1, y: 0, stagger: 0.14, duration: 0.8 }, "+=0.1")
+      .to(servicesReveal, { y: -40, opacity: 0, duration: 0.3 }, "+=0.35");
 
-      cards.forEach((card, i) => {
-        tl.to(card, { yPercent: 0, duration: 1 }, i === 0 ? "+=0.15" : undefined);
-      });
-
-      ScrollTrigger.create({
-        trigger: "#hero",
-        start: "top top",
-        end: () => "+=" + tl.duration() * 100 + "%",
-        scrub: 1,
-        pin: true,
-        anticipatePin: 1,
-        animation: tl,
-      });
+    cards.forEach((card, i) => {
+      tl.to(
+        card,
+        {
+          yPercent: 0,
+          duration: 0.5,
+          onComplete: () => card.removeAttribute("inert"),
+          onReverseComplete: () => card.setAttribute("inert", ""),
+        },
+        i === 0 ? "+=0.15" : undefined,
+      );
     });
 
-    document.fonts.ready.then(() => ScrollTrigger.refresh());
-  }
+    // A short beat on the settled panel before the page moves on. It is deliberately
+    // not sized to absorb scrub lag: a hold long enough to survive a fast flick would
+    // be a full screen of dead scrolling for everyone else. `onLeave` below guarantees
+    // the landed state instead, which is what lets this stay short.
+    tl.to(curtain, {
+      yPercent: 0,
+      duration: 0.6,
+      onComplete: () => curtain?.removeAttribute("inert"),
+      onReverseComplete: () => curtain?.setAttribute("inert", ""),
+    }).to({}, { duration: 0.3 });
+
+    ScrollTrigger.create({
+      trigger: "#hero",
+      start: "top top",
+      end: () => "+=" + tl.duration() * 100 + "%",
+      scrub: 1,
+      pin: true,
+      anticipatePin: 1,
+      // Higher priority refreshes first, so the pin spacer is measured before the
+      // reveal triggers further down the page calculate their own positions.
+      refreshPriority: 1,
+      animation: tl,
+
+      // `scrub` lerps the timeline toward the scroll position over about a second, so
+      // a fast flick can reach the end of the pin while the curtain is still sliding.
+      // The hero then un-pins and scrolls away mid-animation. Snapping the scrub tween
+      // to its end on the way out makes the landed state certain regardless of how
+      // hard the visitor scrolled, so the hold above does not have to pay for it.
+      onLeave: (self) => {
+        self.getTween()?.progress(1);
+        tl.progress(1);
+      },
+      onLeaveBack: (self) => {
+        self.getTween()?.progress(1);
+        tl.progress(0);
+      },
+    });
+
+    // matchMedia reverts GSAP's own tweens and sets, but not attributes we placed
+    // ourselves, so the panel would stay unfocusable if the viewport drops below md.
+    return () => [curtain, ...cards].forEach((el) => el?.removeAttribute("inert"));
+  });
+
+  // Opening entrance for the hero copy, hidden by `.hero-intro` in global.css. It
+  // waits for the web fonts so the headline does not rise in one typeface and
+  // reflow into another mid-motion, but never longer than a moment on a slow line.
+  // Built paused inside the matchMedia context so a reduced-motion switch reverts it.
+  const fontsIn = Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 900))]);
+
+  mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const intro = gsap.fromTo(
+      ".hero-intro",
+      { opacity: 0, y: 14 },
+      { opacity: 1, y: 0, duration: 0.9, ease: "expo.out", stagger: 0.09, paused: true },
+    );
+    fontsIn.then(() => intro.play());
+  });
+
+  document.fonts.ready.then(() => ScrollTrigger.refresh());
 </script>

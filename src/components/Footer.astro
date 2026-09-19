@@ -1,58 +1,162 @@
 ---
-import { site } from "../site.config";
+import { site, services } from "../site.config";
 import { url } from "../lib/url";
 
 const year = new Date().getFullYear();
+
+const companyLinks = [
+  { label: "About Us", href: "/about" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "Contact", href: "/contact" },
+  { label: site.primaryCta.label, href: site.primaryCta.href },
+];
+
+const labelClass = "font-body text-xs font-semibold uppercase tracking-[0.18em] text-surface/55";
+const linkClass = "font-body text-sm text-surface/80 transition-colors hover:text-surface";
+
+// The Contact column has no phone row on purpose. No real number has ever been
+// supplied, and the 555 range is reserved for fiction, so publishing one would
+// point visitors at a stranger. `site.phonePlaceholder` is kept in the config
+// for whenever a real number arrives. Note this is a frontmatter comment rather
+// than an HTML one: markup comments are served to the browser on every page.
 ---
 
-<!--
-  Footer content is a placeholder. The live site's footer was never filled in
-  (it still reads "Your Site Title"), and no footer copy/links were supplied
-  in the discovery brief. Replace the items below with real content before
-  launch.
--->
-<footer class="border-t border-ink/10 bg-bg">
-  <div class="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-3 md:px-10">
-    <div>
-      <p class="font-heading text-xl">{site.name}</p>
-      <p class="mt-3 max-w-xs text-sm text-ink/70">
-        Professional cleaning for homes, businesses, and construction sites in {site.serviceArea}.
-      </p>
-      <p class="mt-4 text-sm">
-        {/* PLACEHOLDER: no phone number on file yet */}
-        <span class="text-ink/50">{site.phonePlaceholder} (placeholder)</span>
-      </p>
+<footer class="bg-shade text-surface">
+  <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+    {/* Two columns on tablets, four from 1024px. At 768-1023px a 12-column grid
+        squeezed the Contact column narrower than the email address, and the grid
+        spilled past the viewport so every page scrolled sideways. */}
+    <div class="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-4">
+        <a href={url("/")} class="inline-flex flex-col leading-none">
+          <span class="font-heading text-xl tracking-tight">Luxury</span>
+          <span class="mt-1.5 font-body text-[10px] uppercase tracking-[0.3em] text-surface/60">
+            Duo Cleaning
+          </span>
+        </a>
+        <p class="mt-6 max-w-xs font-body text-sm leading-relaxed text-surface/70">
+          Professional cleaning for homes, businesses, and construction sites in {site.serviceArea}.
+        </p>
+      </div>
+
+      <nav class="lg:col-span-3" aria-label="Services">
+        <p class={labelClass}>Services</p>
+        <ul class="mt-5 space-y-3">
+          {
+            services.map((service) => (
+              <li>
+                <a href={url(`/services#${service.slug}`)} class={linkClass}>
+                  {service.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="lg:col-span-2" aria-label="Company">
+        <p class={labelClass}>Company</p>
+        <ul class="mt-5 space-y-3">
+          {
+            companyLinks.map((item) => (
+              <li>
+                <a href={url(item.href)} class={linkClass}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="lg:col-span-3">
+        <p class={labelClass}>Contact</p>
+        <ul class="mt-5 space-y-3">
+          <li>
+            <a href={`mailto:${site.email}`} class={`flex items-start gap-3 ${linkClass}`}>
+              <svg
+                class="mt-0.5 shrink-0"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M2.5 4h11a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+                <path
+                  d="m1.9 5.2 6.1 4 6.1-4"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+              {site.email}
+            </a>
+          </li>
+          <li class="flex items-start gap-3 font-body text-sm text-surface/80">
+            <svg
+              class="mt-0.5 shrink-0"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 14.2s4.7-4 4.7-7.2a4.7 4.7 0 1 0-9.4 0c0 3.2 4.7 7.2 4.7 7.2Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+              <path
+                d="M8 5.4a1.6 1.6 0 1 1 0 3.2 1.6 1.6 0 0 1 0-3.2Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+            {site.city}, {site.region} &amp; Surrounding Areas
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <nav aria-label="Footer">
-      <p class="font-body text-sm font-semibold uppercase tracking-wide text-ink/60">Explore</p>
-      <ul class="mt-3 space-y-2 text-sm">
-        {
-          site.nav.map((item) => (
-            <li>
-              <a href={url(item.href)} class="hover:underline">
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-
-    <div>
-      <p class="font-body text-sm font-semibold uppercase tracking-wide text-ink/60">Follow us</p>
-      <ul class="mt-3 space-y-2 text-sm">
-        <li>
-          <a href={site.instagramUrl} class="hover:underline">Instagram</a>
-        </li>
-      </ul>
-      <p class="mt-6 text-xs text-ink/50">
-        No Google Business Profile listed yet.
+    <div
+      class="mt-16 flex flex-col gap-6 border-t border-surface/15 pt-8 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="font-body text-xs text-surface/60">
+        &copy; {year} {site.name}. All rights reserved.
       </p>
-    </div>
-  </div>
 
-  <div class="border-t border-ink/10 px-6 py-6 text-center text-xs text-ink/50 md:px-10">
-    &copy; {year} {site.name}. All rights reserved.
+      <a
+        href={site.instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${site.shortName} on Instagram`}
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-surface/25 text-surface/75 transition-colors hover:border-surface/60 hover:text-surface"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M4.7 2.2h6.6a2.5 2.5 0 0 1 2.5 2.5v6.6a2.5 2.5 0 0 1-2.5 2.5H4.7a2.5 2.5 0 0 1-2.5-2.5V4.7a2.5 2.5 0 0 1 2.5-2.5Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+          <path
+            d="M8 5.6a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+          <path d="M11.4 4.3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+          ></path>
+        </svg>
+      </a>
+    </div>
   </div>
 </footer>

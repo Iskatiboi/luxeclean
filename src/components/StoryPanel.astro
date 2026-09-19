@@ -1,0 +1,71 @@
+---
+import PillButton from "./PillButton.astro";
+import { site } from "../site.config";
+
+const pillars = [
+  {
+    title: "Homes and rentals",
+    body: "Recurring cleans, deep cleans, move-in and move-out turnarounds, and Airbnb turnovers between guests.",
+  },
+  {
+    title: "Offices and storefronts",
+    body: "Routine commercial cleaning built around your business hours, so your space stays presentable without disrupting the day.",
+  },
+  {
+    title: "Job sites",
+    body: "Pre- and post-construction cleanup on your project timeline, from debris and dust removal to the final detail clean.",
+  },
+];
+---
+
+{/*
+  Rides up on the hero's curtain at the end of the pinned sequence, so on desktop
+  this has exactly one viewport to work with. Every vertical gap is a clamp against
+  viewport height rather than a fixed step, and the pillar stagger uses transforms
+  instead of margins so it costs no layout height at all. Deliberately carries no
+  `data-reveal` attributes: those set `autoAlpha: 0` up front, and a ScrollTrigger
+  batch cannot measure its own position inside a pinned container, so the content
+  could be left permanently invisible.
+*/}
+<div class="flex h-full w-full items-center">
+  <div class="mx-auto w-full max-w-6xl px-6 py-24 md:px-10 pinned:py-0">
+    <h2 class="max-w-3xl font-heading text-[clamp(1.75rem,3.2vw,3rem)] leading-tight">
+      Get to know us
+    </h2>
+
+    <p
+      class="mt-[clamp(0.75rem,2vh,1.5rem)] max-w-[55ch] font-body text-[clamp(1rem,1.2vw,1.125rem)] leading-relaxed text-ink/75"
+    >
+      {site.shortName} provides reliable, top-quality cleaning for homes and businesses across {
+        site.serviceArea
+      }. Routine maintenance, a deep clean, or a post-construction detail job: we tailor every visit
+      to the space in front of us.
+    </p>
+
+    <div class="mt-[clamp(2rem,5vh,3.5rem)] grid gap-8 md:grid-cols-3">
+      {
+        pillars.map((pillar, i) => (
+          <div
+            class:list={[
+              "border-t border-accent/40 pt-5",
+              i === 1 && "md:translate-y-6",
+              i === 2 && "md:translate-y-12",
+            ]}
+          >
+            <h3 class="font-heading text-lg text-ink md:text-xl">{pillar.title}</h3>
+            <p class="mt-2.5 font-body text-sm leading-relaxed text-ink/70 md:text-base">
+              {pillar.body}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+
+    {/* The third pillar is translated 48px down but occupies no extra layout height,
+        so this gap has to cover that before it buys any actual breathing room. The
+        4.5rem floor leaves 24px of real space even on a short laptop screen. */}
+    <div class="mt-[clamp(4.5rem,8vh,6rem)]">
+      <PillButton href="/about" variant="outline">Learn more about us</PillButton>
+    </div>
+  </div>
+</div>

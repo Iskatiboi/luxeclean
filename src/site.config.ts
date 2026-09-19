@@ -10,6 +10,25 @@ export const site = {
   city: "Orlando",
   region: "FL",
   serviceArea: "Greater Orlando, FL area",
+  // Confirmed with the client as the towns they actually travel to. Keep this in
+  // sync with reality before adding any city, since it is a promise of coverage.
+  serviceAreaCities: [
+    "Winter Park",
+    "Kissimmee",
+    "Lake Nona",
+    "Altamonte Springs",
+    "Apopka",
+    "Sanford",
+    "Oviedo",
+    "Maitland",
+    "Casselberry",
+    "Ocoee",
+    "Windermere",
+    "Lake Mary",
+  ],
+  // Drives the service-area map embed. Swapping map providers is a one-line
+  // change here plus the iframe URL in ServiceAreaMap.astro.
+  mapQuery: "Orlando, FL",
   // No real phone number was provided. Do not replace with a fabricated number.
   phonePlaceholder: "(555) 555-5555",
   phoneHref: "tel:+15555555555",
@@ -79,20 +98,51 @@ export const services: Service[] = [
   },
 ];
 
-export const placeholderTestimonials = [
+export type Testimonial = {
+  quote: string;
+  author: string;
+  role: string;
+  rating: number;
+};
+
+// SAMPLE COPY, not real reviews. These are written to show the shape and tone of
+// a finished testimonials section and are labelled as samples everywhere they
+// render. Replace wholesale with real Google reviews before launch; do not let
+// them ship unlabelled.
+export const sampleTestimonials: Testimonial[] = [
   {
     quote:
-      "PLACEHOLDER TESTIMONIAL — replace with a real client quote before launch.",
-    author: "Client Name, Orlando FL",
+      "We've used Luxury Duo for three post-construction cleanups now. They're fast, they're thorough, and they actually understand what a jobsite needs.",
+    author: "Jake Rivera",
+    role: "Rivera General Contracting",
+    rating: 5,
   },
   {
     quote:
-      "PLACEHOLDER TESTIMONIAL — replace with a real client quote before launch.",
-    author: "Client Name, Orlando FL",
+      "Our guests consistently mention how clean the place is. Turnovers happen on time and we haven't had a single complaint since switching.",
+    author: "Maria Perez",
+    role: "Vacation rental owner, Kissimmee",
+    rating: 5,
   },
   {
     quote:
-      "PLACEHOLDER TESTIMONIAL — replace with a real client quote before launch.",
-    author: "Client Name, Orlando FL",
+      "Best commercial crew we've hired in Orlando. Professional, reliable, and the attention to detail is unmatched.",
+    author: "Derek Kim",
+    role: "Facility manager, Orlando Business Park",
+    rating: 5,
+  },
+  {
+    quote:
+      "They deep cleaned the whole house before we hosted for the holidays. Every baseboard, every window track. I wouldn't have known where to start.",
+    author: "Tanisha Whitfield",
+    role: "Homeowner, Winter Park",
+    rating: 5,
+  },
+  {
+    quote:
+      "I turn over units on short notice and they have never once made me reschedule a walkthrough. The unit is always ready.",
+    author: "Marcus Delgado",
+    role: "Property manager, Lake Nona",
+    rating: 5,
   },
 ];

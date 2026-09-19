@@ -1,0 +1,330 @@
+---
+import { site, sampleTestimonials } from "../site.config";
+import { initials } from "../lib/initials";
+---
+
+<section id="testimonials" class="scroll-mt-28 overflow-hidden py-24 md:py-36">
+  <div class="mx-auto max-w-6xl px-6 text-center md:px-10">
+    <h2 data-reveal="heading" class="font-heading text-3xl md:text-5xl">What clients say</h2>
+    <p data-reveal="rise" class="mx-auto mt-5 max-w-xl font-body text-ink/70">
+      Trusted by contractors, property managers, and homeowners across {site.city}.
+    </p>
+    <p
+      data-reveal="rise"
+      class="mt-7 inline-block rounded-full border border-accent/50 px-4 py-1.5 font-body text-xs text-ink/65"
+    >
+      Sample copy. Real Google reviews coming soon.
+    </p>
+  </div>
+
+  <div class="mx-auto mt-12 max-w-6xl md:mt-16">
+    {/*
+      Two sizing rules work together so exactly three uniform cards show per view and
+      the third is never clipped:
+
+      The gap matches the horizontal padding. At the far right of the travel the gutter
+      is scrolled through, so any gap narrower than the padding leaves a sliver of the
+      previous card poking into it. Equal values land the cards flush instead.
+
+      Card width is derived from the track rather than fixed, so three plus their two
+      40px gaps fill it exactly. Mobile keeps one card plus a peek as the cue to swipe.
+    */}
+    <ul
+      id="testimonial-track"
+      role="group"
+      aria-label="Client testimonials"
+      tabindex="0"
+      class="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-pl-6 px-6 py-2 md:gap-10 md:scroll-pl-10 md:px-10"
+    >
+      {/* Each slide is `relative` to anchor its sr-only rating label. Without a
+          positioned ancestor that absolutely positioned label escapes the track's
+          clipping and widens the whole page, so it scrolls sideways. */}
+      {
+        sampleTestimonials.map((t) => (
+          <li class="relative w-[min(84vw,400px)] shrink-0 snap-start md:w-[calc((100%-5rem)/3)]">
+            <figure class="flex h-full flex-col gap-6 rounded-[32px] bg-surface p-8">
+              <div>
+                <span class="sr-only">Rated {t.rating} out of 5</span>
+                <div class="flex gap-1.5 text-accent" aria-hidden="true">
+                  {Array.from({ length: t.rating }).map(() => (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M8 1.2l1.95 4.28 4.65.5-3.47 3.13.96 4.59L8 11.4l-4.09 2.3.96-4.59L1.4 5.98l4.65-.5L8 1.2z" />
+                    </svg>
+                  ))}
+                </div>
+              </div>
+
+              <blockquote class="font-body leading-relaxed text-ink/85">
+                &ldquo;{t.quote}&rdquo;
+              </blockquote>
+
+              <figcaption class="mt-auto flex items-center gap-4 border-t border-accent/25 pt-6">
+                <span
+                  aria-hidden="true"
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink font-body text-xs tracking-wide text-surface"
+                >
+                  {initials(t.author)}
+                </span>
+                <span>
+                  <span class="block font-body text-sm font-semibold text-ink">{t.author}</span>
+                  <span class="block font-body text-sm text-ink/65">{t.role}</span>
+                </span>
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ul>
+
+    {/* Hidden until the script wires them up, so a visitor without JS never sees
+        dead controls. The track itself stays swipeable and keyboard scrollable. */}
+    <div id="testimonial-controls" hidden class="mt-10 flex items-center justify-center gap-5 px-6">
+      <button
+        id="testimonial-prev"
+        type="button"
+        aria-label="Previous testimonial"
+        class="carousel-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-surface text-ink transition hover:border-ink/35 active:scale-95"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M12.5 8h-9M7.5 4l-4 4 4 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        {
+          /* One button per testimonial is the upper bound. The script maps them to
+             reachable scroll positions instead, which is a smaller number whenever
+             more than one card fits on screen, and hides the surplus. */
+          sampleTestimonials.map((_, i) => (
+            <button
+              type="button"
+              data-testimonial-dot
+              aria-label={`Go to position ${i + 1}`}
+              class="carousel-dot h-2 w-2 rounded-full bg-ink/25 transition-colors"
+            />
+          ))
+        }
+      </div>
+
+      <button
+        id="testimonial-next"
+        type="button"
+        aria-label="Next testimonial"
+        class="carousel-btn flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-surface text-ink transition hover:border-ink/35 active:scale-95"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M3.5 8h9M8.5 4l4 4-4 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </button>
+    </div>
+
+    <p id="testimonial-status" class="sr-only" aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  /* These two states are driven by aria attributes the script sets, so they live
+     in real CSS rather than Tailwind aria variants, which only generate for class
+     strings present in the source and left both states silently unstyled. */
+  .carousel-dot[aria-current="true"] {
+    background-color: var(--color-ink);
+  }
+
+  .carousel-btn[aria-disabled="true"] {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .carousel-btn[aria-disabled="true"]:hover {
+    border-color: color-mix(in oklab, var(--color-ink) 15%, transparent);
+  }
+</style>
+
+<script>
+  const track = document.getElementById("testimonial-track");
+  const controls = document.getElementById("testimonial-controls");
+  const prev = document.getElementById("testimonial-prev");
+  const next = document.getElementById("testimonial-next");
+  const status = document.getElementById("testimonial-status");
+
+  if (track && controls && prev && next && status) {
+    const slides = Array.from(track.querySelectorAll("li"));
+    const dots = Array.from(controls.querySelectorAll("[data-testimonial-dot]")) as HTMLElement[];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    controls.hidden = false;
+
+    // Tolerance for comparing scroll positions. Fractional scrollLeft at browser zoom
+    // levels other than 100% means exact equality never holds, and two snap positions
+    // a few pixels apart at awkward widths should count as the same place.
+    const EPSILON = 12;
+
+    const padLeft = () => parseFloat(getComputedStyle(track).paddingLeft);
+    const rawLeft = (slide: HTMLElement) => slide.offsetLeft - track.offsetLeft;
+
+    // Where the page sits when this slide is snapped to the leading edge, offset by
+    // the track's own gutter so the leading card keeps its inset instead of sitting flush.
+    const restOffset = (slide: HTMLElement) => rawLeft(slide) - padLeft();
+
+    // The heart of the fix. Slides are NOT interchangeable with scroll positions: once
+    // more than one card fits on screen, the last slides' rest offsets sit beyond the
+    // track's maximum scroll and can never be reached. Indexing by slide meant the back
+    // arrow at the far right kept targeting a position the browser clamped straight back
+    // to where it already was, so nothing moved, forever. Index by reachable stops instead.
+    let stops: number[] = [];
+
+    const computeStops = () => {
+      const max = Math.max(track.scrollWidth - track.clientWidth, 0);
+      const found: number[] = [];
+
+      slides.forEach((slide) => {
+        const offset = Math.min(Math.max(restOffset(slide), 0), max);
+        if (!found.length || offset - found[found.length - 1] > EPSILON) found.push(offset);
+      });
+
+      // Land the final stop exactly on the travel limit when it is already within a
+      // hair of it, so the last position is genuinely reachable.
+      if (found.length && max - found[found.length - 1] < EPSILON) found[found.length - 1] = max;
+
+      return found.length ? found : [0];
+    };
+
+    // While a smooth scroll is in flight scrollLeft is mid-journey, so two quick clicks
+    // would otherwise both measure from the same intermediate spot and skip a stop.
+    let pendingTarget: number | null = null;
+    let settleTimer = 0;
+
+    const position = () => pendingTarget ?? track.scrollLeft;
+    const stopAfter = () => stops.find((stop) => stop > position() + EPSILON);
+    const stopBefore = () => [...stops].reverse().find((stop) => stop < position() - EPSILON);
+
+    const activeIndex = () => {
+      const current = position();
+      let best = 0;
+      let bestDistance = Infinity;
+      stops.forEach((stop, i) => {
+        const distance = Math.abs(stop - current);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = i;
+        }
+      });
+      return best;
+    };
+
+    const sync = () => {
+      const active = activeIndex();
+
+      dots.forEach((dot, i) => {
+        const inUse = i < stops.length;
+        // Hiding the button a visitor is focused on would drop focus to <body>.
+        if (!inUse && document.activeElement === dot) next.focus();
+        dot.hidden = !inUse;
+        dot.setAttribute("aria-current", inUse && i === active ? "true" : "false");
+        dot.setAttribute("aria-label", `Go to position ${i + 1} of ${stops.length}`);
+      });
+
+      // aria-disabled rather than the disabled attribute: disabling the button the
+      // visitor just pressed would drop focus to <body> mid-interaction.
+      prev.setAttribute("aria-disabled", stopBefore() === undefined ? "true" : "false");
+      next.setAttribute("aria-disabled", stopAfter() === undefined ? "true" : "false");
+    };
+
+    // Dots no longer map one-to-one onto testimonials, so announce what is actually
+    // on screen rather than a single index that would not match what the visitor sees.
+    const announce = (target: number) => {
+      const windowEnd = target + track.clientWidth;
+      const visible = slides.filter((slide) => {
+        const start = rawLeft(slide);
+        const shown = Math.min(start + slide.offsetWidth, windowEnd) - Math.max(start, target);
+        // A sliver of a neighbouring card peeking past the gutter is not something
+        // the visitor can read, so it should not widen the announced range.
+        return shown > slide.offsetWidth * 0.4;
+      });
+      if (!visible.length) return;
+
+      const first = slides.indexOf(visible[0]) + 1;
+      const last = slides.indexOf(visible[visible.length - 1]) + 1;
+      status.textContent =
+        first === last
+          ? `Testimonial ${first} of ${slides.length}`
+          : `Testimonials ${first} to ${last} of ${slides.length}`;
+    };
+
+    const settle = () => {
+      pendingTarget = null;
+      sync();
+    };
+
+    const goTo = (target: number) => {
+      pendingTarget = target;
+      track.scrollTo({ left: target, behavior: reduceMotion.matches ? "auto" : "smooth" });
+      announce(target);
+      sync();
+      // `scrollend` is missing in older WebKit, so never rely on it alone to clear
+      // the pending target or the arrows would stay frozen on that browser.
+      clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, 700);
+    };
+
+    prev.addEventListener("click", () => {
+      const target = stopBefore();
+      if (target !== undefined) goTo(target);
+    });
+
+    next.addEventListener("click", () => {
+      const target = stopAfter();
+      if (target !== undefined) goTo(target);
+    });
+
+    dots.forEach((dot, i) =>
+      dot.addEventListener("click", () => {
+        if (i < stops.length) goTo(stops[i]);
+      })
+    );
+
+    // Drives dot state during a swipe without a scroll listener. It deliberately does
+    // not touch the live region, or swiping would announce on every slide crossed.
+    const observer = new IntersectionObserver(
+      () => {
+        if (pendingTarget === null) sync();
+      },
+      { root: track, threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+
+    slides.forEach((slide) => observer.observe(slide));
+    track.addEventListener("scrollend", settle);
+
+    // Catches font loading, ScrollTrigger refreshes, and mobile dvh changes that never
+    // fire a window resize. Observing one element means at most one entry per frame,
+    // so no debounce is needed, and the initial callback doubles as setup.
+    const resizeObserver = new ResizeObserver(() => {
+      stops = computeStops();
+      // A resize can strand the track between two stops.
+      const nearest = stops.reduce(
+        (a, b) => (Math.abs(b - track.scrollLeft) < Math.abs(a - track.scrollLeft) ? b : a),
+        stops[0]
+      );
+      if (Math.abs(nearest - track.scrollLeft) > 1) {
+        track.scrollTo({ left: nearest, behavior: "auto" });
+      }
+      pendingTarget = null;
+      sync(); // no announcement: a resize is not a navigation
+    });
+
+    resizeObserver.observe(track);
+
+    stops = computeStops();
+    sync();
+  }
+</script>

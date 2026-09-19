@@ -15,8 +15,11 @@ interface Props {
 const { service, index, total, tags, image } = Astro.props;
 ---
 
-<div class="grid overflow-hidden rounded-[32px] bg-surface shadow-[0_30px_80px_rgba(23,17,13,0.18)] md:w-full md:max-w-6xl md:grid-cols-2 md:motion-safe:aspect-[16/10] md:motion-safe:min-h-[520px]">
-  <div class="flex flex-col justify-between gap-6 p-8 md:p-12">
+{/* `max-h` only bites on short laptop screens (under ~900px tall), where a 16:10
+    card at full width would fill the viewport and slide under the fixed header.
+    Padding shrinks with viewport height for the same reason, capped at p-12. */}
+<div class="grid overflow-hidden rounded-[32px] bg-surface shadow-[0_30px_80px_rgba(23,17,13,0.18)] md:w-full md:max-w-6xl md:grid-cols-2 pinned:aspect-[16/10] pinned:max-h-[calc(100dvh-11rem)]">
+  <div class="flex flex-col justify-between gap-6 p-8 md:p-12 pinned:gap-[min(1.5rem,2.5vh)] pinned:p-[min(3rem,5vh)]">
     <div class="flex items-center justify-between">
       {service.featured && (
         <span class="inline-flex items-center rounded-full bg-ink px-3 py-1 font-body text-xs font-semibold uppercase tracking-wide text-surface">
@@ -39,11 +42,24 @@ const { service, index, total, tags, image } = Astro.props;
         ))}
       </div>
     </div>
-    <PillButton href="/request-a-quote" class="self-start">
-      Request a Quote
-    </PillButton>
+    {/* Wraps rather than shrinks, so neither label ever breaks across two lines on a
+        narrow card. The secondary link deep-links to this service's own entry on the
+        services page rather than the top of it. */}
+    <div class="flex flex-wrap items-center gap-3">
+      <PillButton href="/request-a-quote">Request a Quote</PillButton>
+      <PillButton href={`/services#${service.slug}`} variant="outline">See details</PillButton>
+    </div>
   </div>
-  <div class="hidden md:block">
-    <Image src={image} alt={service.title} class="h-full w-full object-cover object-center" />
+  {/* The photo is taken out of flow on purpose. Several of these are portrait crops
+      (up to 736x1128), and in normal flow the image renders at its intrinsic ratio and
+      stretches the grid row past the height the card's aspect-ratio sets. `overflow-hidden`
+      then quietly clips the bottom of BOTH columns, which is where the buttons live.
+      Absolute positioning lets the row height come from the card instead of the photo. */}
+  <div class="relative hidden md:block">
+    <Image
+      src={image}
+      alt={service.title}
+      class="absolute inset-0 h-full w-full object-cover object-center"
+    />
   </div>
 </div>

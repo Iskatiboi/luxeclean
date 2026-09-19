@@ -2,21 +2,25 @@
 import Layout from "../layouts/Layout.astro";
 import TestimonialCard from "../components/TestimonialCard.astro";
 import PillButton from "../components/PillButton.astro";
-import { placeholderTestimonials } from "../site.config";
+import { sampleTestimonials } from "../site.config";
 ---
 
 <Layout title="Testimonials" description="See what clients say about Luxury Duo Cleaning LLC.">
   <section class="mx-auto max-w-3xl px-6 pb-4 pt-16 text-center md:pt-24">
     <h1 class="font-heading text-4xl md:text-5xl">What clients say</h1>
     <p class="mt-4 font-body text-ink/70">
-      This company is newly launched — the quotes below are clearly-marked placeholders. Replace them with
-      real client testimonials as they come in.
+      This company is newly launched, so the quotes below are sample copy showing the kind of work we
+      take on. Real Google reviews will replace them as they come in.
     </p>
   </section>
 
   <section class="mx-auto max-w-3xl px-6 py-16 md:px-10 md:py-24">
     <div class="divide-y divide-ink">
-      {placeholderTestimonials.map((t) => <TestimonialCard quote={t.quote} author={t.author} />)}
+      {
+        sampleTestimonials.map((t) => (
+          <TestimonialCard quote={t.quote} author={`${t.author}, ${t.role}`} />
+        ))
+      }
     </div>
   </section>
 
