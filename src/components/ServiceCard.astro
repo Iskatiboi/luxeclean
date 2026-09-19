@@ -46,7 +46,7 @@ const { service, index, total, tags, image } = Astro.props;
         narrow card. The secondary link deep-links to this service's own entry on the
         services page rather than the top of it. */}
     <div class="flex flex-wrap items-center gap-3">
-      <PillButton href="/request-a-quote">Request a Quote</PillButton>
+      <PillButton href={`/request-a-quote?service=${service.slug}`}>Request a Quote</PillButton>
       <PillButton href={`/services#${service.slug}`} variant="outline">See details</PillButton>
     </div>
   </div>

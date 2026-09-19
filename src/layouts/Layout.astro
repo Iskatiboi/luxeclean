@@ -9,9 +9,11 @@ interface Props {
   description?: string;
   ogImage?: string;
   hasHero?: boolean;
+  // Lays an ornamental background (`.bg-pattern-*` in global.css) behind the content.
+  pattern?: "circles" | "dots";
 }
 
-const { title, description = site.description, ogImage, hasHero = false } = Astro.props;
+const { title, description = site.description, ogImage, hasHero = false, pattern } = Astro.props;
 const pageTitle = `${title} | ${site.shortName}`;
 const canonicalUrl = new URL(Astro.url.pathname, site.url);
 
@@ -77,7 +79,7 @@ const jsonLd = {
       Skip to content
     </a>
     <Header />
-    <main id="main-content" class:list={["flex-1", !hasHero && "pt-28"]}>
+    <main id="main-content" class:list={["flex-1", !hasHero && "pt-28", pattern && `bg-pattern-${pattern}`]}>
       <slot />
     </main>
     <Footer />

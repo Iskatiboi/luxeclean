@@ -1,33 +1,74 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import TestimonialCard from "../components/TestimonialCard.astro";
+import TestimonialStory from "../components/TestimonialStory.astro";
 import PillButton from "../components/PillButton.astro";
 import { sampleTestimonials } from "../site.config";
+import { url } from "../lib/url";
 ---
 
-<Layout title="Testimonials" description="See what clients say about Luxury Duo Cleaning LLC.">
-  <section class="mx-auto max-w-3xl px-6 pb-4 pt-16 text-center md:pt-24">
-    <h1 class="font-heading text-4xl md:text-5xl">What clients say</h1>
-    <p class="mt-4 font-body text-ink/70">
-      This company is newly launched, so the quotes below are sample copy showing the kind of work we
-      take on. Real Google reviews will replace them as they come in.
-    </p>
-  </section>
+<Layout title="Testimonials" pattern="dots" description="See what clients say about Luxury Duo Cleaning LLC.">
+  <section class="relative mx-auto max-w-7xl px-6 pb-16 pt-10 md:px-10 md:pb-24 lg:pt-16">
+    {/* An oversized quotation mark sets the tone before a word is read. */}
+    <span
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-10 right-0 select-none font-heading text-[16rem] leading-none text-accent/25 md:-top-16 md:right-6 md:text-[26rem]"
+    >
+      &ldquo;
+    </span>
 
-  <section class="mx-auto max-w-3xl px-6 py-16 md:px-10 md:py-24">
-    <div class="divide-y divide-ink">
-      {
-        sampleTestimonials.map((t) => (
-          <TestimonialCard quote={t.quote} author={`${t.author}, ${t.role}`} />
-        ))
-      }
+    <div class="relative max-w-4xl">
+      <h1 data-reveal="heading" class="font-heading text-5xl leading-[1.05] md:text-7xl lg:text-8xl">
+        In their<br />own words
+      </h1>
+      <p data-reveal="rise" class="mt-8 max-w-xl font-body text-lg leading-relaxed text-ink/75">
+        Contractors, hosts, property managers, and homeowners across Greater Orlando, on what it's like
+        to hand us the keys.
+      </p>
+      {/* The reviews are sample copy until real Google reviews replace them, and
+          this notice must stay visible for as long as that is true. */}
+      <p
+        data-reveal="rise"
+        class="mt-8 inline-flex items-center gap-2 rounded-full border border-accent/60 bg-surface/80 px-4 py-2 font-body text-xs text-ink/75"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" />
+          <path d="M8 7.2v3.6M8 5h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        Sample reviews. Real Google reviews coming soon.
+      </p>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-6 pb-16 md:px-10 md:pb-24">
-    <div class="flex flex-col items-start gap-4 border-t border-ink pt-10 md:flex-row md:items-center md:justify-between">
-      <p class="max-w-md font-heading text-2xl">Want to be our next success story?</p>
-      <PillButton href="/request-a-quote">Request a Quote</PillButton>
+  <section class="mx-auto flex max-w-7xl flex-col gap-24 px-6 pb-28 md:px-10 lg:gap-36 lg:pb-40">
+    {sampleTestimonials.map((t, i) => <TestimonialStory testimonial={t} index={i} />)}
+  </section>
+
+  {/* Dark and full-bleed, so it runs straight into the footer as one closing block. */}
+  <section class="bg-shade text-surface">
+    <div class="mx-auto flex max-w-7xl flex-col items-start gap-10 px-6 py-20 md:px-10 md:py-28 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h2 data-reveal="heading" class="font-heading text-4xl leading-tight md:text-6xl">
+          Your space<br />could be next.
+        </h2>
+        <p data-reveal="rise" class="mt-5 max-w-md font-body text-surface/75">
+          Tell us about the job and we'll put together a free quote.
+        </p>
+      </div>
+      <div data-reveal="rise" class="flex flex-wrap items-center gap-3">
+        <PillButton href="/request-a-quote" variant="inverted">Request a Quote</PillButton>
+        <a
+          href={url("/contact")}
+          class="inline-flex items-center justify-center rounded-full border border-surface/40 px-8 py-3 font-body text-sm text-surface transition-colors hover:border-surface"
+        >
+          Contact us
+        </a>
+      </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  import { initReveals } from "../scripts/reveal";
+
+  initReveals();
+</script>

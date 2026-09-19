@@ -91,10 +91,14 @@ Everything below is a clearly-marked placeholder in the code — search for
 - **Service area** — `site.serviceAreaCities` lists the 12 towns shown as chips
   beside the map. This is a public promise of coverage, so confirm it with the
   client before adding to it. `site.mapQuery` drives the map embed.
-- **Form backend** — the Contact and Request-a-Quote forms validate and show
-  submit feedback, but don't send anywhere until `PUBLIC_FORM_ENDPOINT` is
-  set (see `.env.example`). Point it at Formspree, Netlify Forms, or your own
-  serverless function.
+- **Form backend** — the Contact and Request-a-Quote forms validate inline and
+  POST to `PUBLIC_FORM_ENDPOINT` once it is set (see `.env.example`). Point it at
+  Formspree, Netlify Forms, or your own serverless function. Until then, pressing
+  send opens the visitor's email app with their details filled in and addressed
+  to `site.email`, so enquiries still arrive. A hidden `_gotcha` honeypot field
+  drops simple bot submissions (Formspree recognises that name natively).
+- **Quote deep links** — `/request-a-quote?service=<slug>` preselects that
+  service. The homepage cards and each Services accordion panel link this way.
 - **Location** — copy uses Orlando, FL per your confirmation (the live site's
   About section currently says "Tampa based company" — worth fixing on the
   live site too if it's stale).

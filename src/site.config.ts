@@ -33,6 +33,8 @@ export const site = {
   phonePlaceholder: "(555) 555-5555",
   phoneHref: "tel:+15555555555",
   email: "info@luxuryduocleaning.com",
+  // Keep in sync with openingHoursSpecification in Layout.astro's JSON-LD.
+  hours: "Mon–Fri, 8am–6pm",
   instagramUrl: "https://instagram.com/",
   nav: [
     { label: "Home", href: "/" },
@@ -103,6 +105,8 @@ export type Testimonial = {
   author: string;
   role: string;
   rating: number;
+  // Optional link to the service this review is about (a slug from `services`).
+  service?: string;
 };
 
 // SAMPLE COPY, not real reviews. These are written to show the shape and tone of
@@ -116,6 +120,7 @@ export const sampleTestimonials: Testimonial[] = [
     author: "Jake Rivera",
     role: "Rivera General Contracting",
     rating: 5,
+    service: "commercial-construction",
   },
   {
     quote:
@@ -123,6 +128,7 @@ export const sampleTestimonials: Testimonial[] = [
     author: "Maria Perez",
     role: "Vacation rental owner, Kissimmee",
     rating: 5,
+    service: "airbnb",
   },
   {
     quote:
@@ -130,6 +136,7 @@ export const sampleTestimonials: Testimonial[] = [
     author: "Derek Kim",
     role: "Facility manager, Orlando Business Park",
     rating: 5,
+    service: "commercial",
   },
   {
     quote:
@@ -137,6 +144,7 @@ export const sampleTestimonials: Testimonial[] = [
     author: "Tanisha Whitfield",
     role: "Homeowner, Winter Park",
     rating: 5,
+    service: "deep-cleaning",
   },
   {
     quote:
@@ -144,5 +152,6 @@ export const sampleTestimonials: Testimonial[] = [
     author: "Marcus Delgado",
     role: "Property manager, Lake Nona",
     rating: 5,
+    service: "move-in-move-out",
   },
 ];

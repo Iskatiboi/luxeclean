@@ -1,0 +1,30 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+}
+
+const { image, alt } = Astro.props;
+
+// Shows the whole photo, never a crop. Filling the column with `object-cover` cut
+// tall portrait shots down to a strip. Instead the photo keeps its own proportions
+// and is capped by height (60% of the screen on phones and tablets, the space below
+// the header on desktop) so it always fits, centred in its column.
+//
+// From lg up it is sticky, so it stays beside a form that is taller than the
+// screen. It sticks just below the fixed header (the page pads its top by the same
+// 7rem), and its height cap is that remaining space less its own padding. The page
+// grid supplies the side gutters.
+---
+
+<div class="flex justify-center lg:sticky lg:top-28 lg:h-[calc(100dvh-7rem)] lg:items-center lg:py-6">
+  <Image
+    src={image}
+    alt={alt}
+    class="h-auto max-h-[60svh] w-auto max-w-full rounded-[24px] shadow-[0_24px_60px_rgba(23,17,13,0.14)] lg:max-h-[calc(100dvh-10rem)] lg:rounded-[32px]"
+    loading="eager"
+  />
+</div>

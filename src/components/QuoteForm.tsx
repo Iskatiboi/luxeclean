@@ -1,166 +1,134 @@
-import { useState, type FormEvent } from "react";
-import { inputClass, textareaClass, labelClass, selectClass } from "./formStyles";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { services } from "../site.config";
+import { useFormSubmit, TextField, TextArea, ChoiceGroup, SubmitButton, SubmitError, Outcome, Honeypot } from "./formKit";
 
-type Status = "idle" | "submitting" | "success" | "error";
+const NOT_SURE = "Not sure yet";
 
-const FORM_ENDPOINT = import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined;
+// Values are the readable titles, so a submission reads well in an inbox; the
+// slug is only used to preselect from a /request-a-quote?service=<slug> link.
+const SERVICE_OPTIONS = [...services.map((s) => ({ value: s.title, label: s.title })), { value: NOT_SURE, label: NOT_SURE }];
 
-const SERVICE_OPTIONS = [
-  "Residential Cleaning",
-  "Commercial Cleaning",
-  "Commercial / Construction Cleanup",
-  "Airbnb & Vacation Rental Cleaning",
-  "Move-In / Move-Out Cleaning",
-  "Deep Cleaning",
+const FREQUENCY_OPTIONS = ["One-time", "Weekly", "Every 2 weeks", "Monthly"].map((f) => ({ value: f, label: f }));
+
+const REQUIRED = [
+  { name: "firstName", message: "Please enter your first name." },
+  { name: "lastName", message: "Please enter your last name." },
+  { name: "email", message: "We need an email address to send your quote to." },
+  { name: "serviceType", message: "Pick the service closest to what you need, or “Not sure yet”." },
+  { name: "propertyDetails", message: "A few details about the space help us quote accurately." },
 ];
 
-const REQUIRED_FIELDS = ["firstName", "lastName", "email", "serviceType", "propertyDetails"];
+function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-6 border-t border-ink/10 pt-8 first:border-t-0 first:pt-0">
+      <h2 className="flex items-center gap-3 font-heading text-xl">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full border border-ink/25 font-body text-xs font-semibold" aria-hidden="true">
+          {n}
+        </span>
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
 
 export default function QuoteForm() {
-  const [status, setStatus] = useState<Status>("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [service, setService] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const dateRef = useRef<HTMLInputElement>(null);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
+  const { status, setStatus, errors, clearError, onSubmit, mailHref } = useFormSubmit({
+    required: REQUIRED,
+    mailSubject: (d) => `Quote request: ${d.get("serviceType") ?? ""}`,
+    mailLines: (d) => [
+      ["Name", `${d.get("firstName") ?? ""} ${d.get("lastName") ?? ""}`.trim()],
+      ["Email", String(d.get("email") ?? "")],
+      ["Phone", String(d.get("phone") ?? "")],
+      ["Service", String(d.get("serviceType") ?? "")],
+      ["How often", String(d.get("frequency") ?? "")],
+      ["Property type", String(d.get("propertyType") ?? "")],
+      ["City or area", String(d.get("location") ?? "")],
+      ["Preferred date", String(d.get("preferredDate") ?? "")],
+      ["About the space", `\n${d.get("propertyDetails") ?? ""}`],
+    ],
+  });
 
-    const nextErrors: Record<string, string> = {};
-    for (const field of REQUIRED_FIELDS) {
-      if (!String(data.get(field) ?? "").trim()) nextErrors[field] = "Required";
-    }
-    const email = String(data.get("email") ?? "");
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      nextErrors.email = "Enter a valid email address";
-    }
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+  // Client-only on purpose: reading the URL or today's date during render would
+  // differ from the server-built HTML and break hydration.
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("service");
+    const match = services.find((s) => s.slug === slug);
+    if (match) setService(match.title);
+    if (dateRef.current) dateRef.current.min = new Date().toISOString().slice(0, 10);
+  }, []);
 
-    if (!FORM_ENDPOINT) {
-      setStatus("error");
-      return;
-    }
-
-    setStatus("submitting");
-    try {
-      const res = await fetch(FORM_ENDPOINT, {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: data,
-      });
-      if (!res.ok) throw new Error("Submission failed");
-      setStatus("success");
-      form.reset();
-    } catch {
-      setStatus("error");
-    }
-  }
+  const done = status === "success" || status === "mailto";
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6" aria-describedby="quote-form-status">
-      <fieldset>
-        <legend className={labelClass}>Name</legend>
-        <div className="mt-2 grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="q-firstName" className="mb-1 block text-xs text-ink/60">
-              First Name (required)
-            </label>
-            <input id="q-firstName" name="firstName" type="text" autoComplete="given-name" className={inputClass} aria-invalid={Boolean(errors.firstName)} />
-          </div>
-          <div>
-            <label htmlFor="q-lastName" className="mb-1 block text-xs text-ink/60">
-              Last Name (required)
-            </label>
-            <input id="q-lastName" name="lastName" type="text" autoComplete="family-name" className={inputClass} aria-invalid={Boolean(errors.lastName)} />
-          </div>
-        </div>
-      </fieldset>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div>
-          <label htmlFor="q-email" className={labelClass}>
-            Email (required)
-          </label>
-          <input id="q-email" name="email" type="email" autoComplete="email" className={`${inputClass} mt-2`} aria-invalid={Boolean(errors.email)} />
-          {errors.email && <p className="mt-1 text-xs text-ink/70">{errors.email}</p>}
-        </div>
-        <div>
-          <label htmlFor="q-phone" className={labelClass}>
-            Phone (optional)
-          </label>
-          <input id="q-phone" name="phone" type="tel" autoComplete="tel" className={`${inputClass} mt-2`} />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="q-serviceType" className={labelClass}>
-          Service needed (required)
-        </label>
-        <select id="q-serviceType" name="serviceType" defaultValue="" className={`${selectClass} mt-2`} aria-invalid={Boolean(errors.serviceType)}>
-          <option value="" disabled>
-            Select a service
-          </option>
-          {SERVICE_OPTIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div>
-          <label htmlFor="q-propertyType" className={labelClass}>
-            Property / business type
-          </label>
-          <input
-            id="q-propertyType"
-            name="propertyType"
-            type="text"
-            placeholder="e.g. 2-bed home, office, job site, Airbnb"
-            className={`${inputClass} mt-2`}
-          />
-        </div>
-        <div>
-          <label htmlFor="q-preferredDate" className={labelClass}>
-            Preferred date
-          </label>
-          <input id="q-preferredDate" name="preferredDate" type="date" className={`${inputClass} mt-2`} />
-        </div>
-      </div>
-
-      <div>
-        <label htmlFor="q-propertyDetails" className={labelClass}>
-          Tell us about the space (required)
-        </label>
-        <textarea
-          id="q-propertyDetails"
-          name="propertyDetails"
-          rows={5}
-          placeholder="Square footage, rooms, current condition, access details, anything else that helps us quote accurately."
-          className={`${textareaClass} mt-2`}
-          aria-invalid={Boolean(errors.propertyDetails)}
+    <>
+      {done && (
+        <Outcome
+          status={status}
+          mailHref={mailHref}
+          successTitle="Request received. Thank you."
+          successBody="We'll review the details and send your free quote to the email address you gave us. If anything is unclear we'll reach out first."
+          onReset={() => setStatus("idle")}
         />
-      </div>
+      )}
 
-      <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="self-start rounded-full bg-ink px-8 py-3 font-body text-sm text-surface disabled:opacity-60"
-      >
-        {status === "submitting" ? "Sending…" : "Request My Quote"}
-      </button>
+      <form onSubmit={onSubmit} noValidate hidden={done} className="relative flex flex-col gap-8">
+        <Step n={1} title="Your details">
+          <div className="grid gap-6 @sm:grid-cols-2">
+            <TextField id="q-firstName" name="firstName" label="First name" autoComplete="given-name" error={errors.firstName} onEdit={() => clearError("firstName")} />
+            <TextField id="q-lastName" name="lastName" label="Last name" autoComplete="family-name" error={errors.lastName} onEdit={() => clearError("lastName")} />
+          </div>
+          <div className="grid gap-6 @sm:grid-cols-2">
+            <TextField id="q-email" name="email" type="email" label="Email" autoComplete="email" inputMode="email" error={errors.email} onEdit={() => clearError("email")} />
+            <TextField id="q-phone" name="phone" type="tel" label="Phone" optional autoComplete="tel" inputMode="tel" />
+          </div>
+        </Step>
 
-      <div id="quote-form-status" role="status" aria-live="polite" className="font-body text-sm">
-        {status === "success" && <p>Thanks — your quote request has been sent. We'll follow up shortly.</p>}
-        {status === "error" && !FORM_ENDPOINT && (
-          <p className="text-ink/70">
-            Form submission isn't connected to an email service yet (no PUBLIC_FORM_ENDPOINT configured). See README.
-          </p>
-        )}
-        {status === "error" && FORM_ENDPOINT && <p>Something went wrong sending your request. Please try again.</p>}
-        {Object.keys(errors).length > 0 && status === "idle" && <p>Please fill in all required fields.</p>}
-      </div>
-    </form>
+        <Step n={2} title="The job">
+          <ChoiceGroup
+            name="serviceType"
+            legend="Which service do you need?"
+            options={SERVICE_OPTIONS}
+            value={service}
+            onChange={(v) => {
+              setService(v);
+              clearError("serviceType");
+            }}
+            error={errors.serviceType}
+          />
+          <ChoiceGroup name="frequency" legend="How often?" optional options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
+          <div className="grid gap-6 @sm:grid-cols-2">
+            <TextField id="q-location" name="location" label="City or area" optional autoComplete="address-level2" placeholder="e.g. Winter Park" />
+            <TextField id="q-preferredDate" name="preferredDate" type="date" label="Preferred start date" optional ref={dateRef} />
+          </div>
+        </Step>
+
+        <Step n={3} title="The space">
+          <TextField id="q-propertyType" name="propertyType" label="Property or business type" optional placeholder="e.g. 3-bed home, dental office, new build" />
+          <TextArea
+            id="q-propertyDetails"
+            name="propertyDetails"
+            label="Tell us about the space"
+            rows={5}
+            placeholder="Rough square footage, number of rooms, current condition, and anything we should know about access."
+            hint="The more you tell us, the more accurate your quote."
+            error={errors.propertyDetails}
+            onEdit={() => clearError("propertyDetails")}
+          />
+        </Step>
+
+        {status === "error" && <SubmitError />}
+
+        <div className="flex flex-col gap-4 border-t border-ink/10 pt-8 @sm:flex-row @sm:items-center @sm:justify-between">
+          <SubmitButton busy={status === "submitting"}>Request my free quote</SubmitButton>
+          <p className="font-body text-xs text-ink/60">Free and no obligation.</p>
+        </div>
+        <Honeypot />
+      </form>
+    </>
   );
 }

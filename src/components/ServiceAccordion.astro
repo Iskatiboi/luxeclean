@@ -1,5 +1,6 @@
 ---
 import type { Service } from "../site.config";
+import { url } from "../lib/url";
 
 interface Props {
   services: Service[];
@@ -8,31 +9,89 @@ interface Props {
 const { services } = Astro.props;
 ---
 
-<!-- Native <details>/<summary> accordion: zero JS, keyboard- and screen-reader-accessible by default. -->
+<!-- Native <details>/<summary> accordion: keyboard- and screen-reader-accessible by default.
+     The shared `name` makes it exclusive (opening one closes the others), which also
+     keeps the photo beside it unambiguous. Each item's id is the service slug, so
+     /services#<slug> links from the footer and homepage cards can open it. -->
 <div class="border-t border-ink">
   {
-    services.map((service) => (
-      <details id={service.slug} class="group scroll-mt-28 border-b border-ink">
-        <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-6 font-heading text-xl md:text-2xl">
+    services.map((service, i) => (
+      <details id={service.slug} name="services" data-service class="service-item group scroll-mt-28 border-b border-ink/15">
+        {/* Fixed columns (number, title, tag, icon) keep every row on the same lines.
+            "Featured" sits beside the icon rather than inside the title, where it
+            forced long titles to wrap and made that one row taller than the rest. */}
+        <summary class="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-4 py-5 sm:grid-cols-[2.25rem_minmax(0,1fr)_auto_auto]">
+          <span class="hidden font-body text-xs font-semibold tabular-nums tracking-wide text-ink/45 transition-colors group-open:text-ink sm:block" aria-hidden="true">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <span class="font-heading text-lg leading-snug text-ink md:text-xl">{service.title}</span>
           <span>
-            {service.title}
             {service.featured && (
-              <span class="ml-3 align-middle font-body text-xs font-semibold uppercase tracking-wide text-ink/60">
+              <span class="inline-block rounded-full bg-ink px-2.5 py-1 font-body text-[10px] font-semibold uppercase tracking-[0.14em] text-surface">
                 Featured
               </span>
             )}
           </span>
-          <span class="shrink-0 font-body text-2xl leading-none group-open:hidden" aria-hidden="true">
-            +
-          </span>
-          <span class="hidden shrink-0 font-body text-2xl leading-none group-open:inline" aria-hidden="true">
-            &minus;
+          <span
+            class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink/25 text-ink transition-colors duration-300 group-open:border-ink group-open:bg-ink group-open:text-surface"
+            aria-hidden="true"
+          >
+            <span class="absolute h-px w-3.5 bg-current" />
+            <span class="plus-bar absolute h-3.5 w-px bg-current" />
           </span>
         </summary>
-        <div class="max-w-2xl pb-6 font-body text-base leading-relaxed text-ink/80">
+        {/* Indented to the title column so the text hangs off the same edge. Phones
+            drop the number column, so the text takes the full width there. */}
+        <div class="pb-7 font-body sm:pl-[3.25rem] sm:pr-[3.25rem] text-base leading-relaxed text-ink/75">
           <p>{service.details}</p>
+          {/* Arrives on the quote form with this service already selected. */}
+          <a
+            href={url(`/request-a-quote?service=${service.slug}`)}
+            aria-label={`Get a quote for ${service.title}`}
+            class="group/link mt-4 inline-flex items-center gap-2 font-body text-sm font-medium text-ink underline-offset-4 hover:underline"
+          >
+            Get a quote for this
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="transition-transform group-hover/link:translate-x-0.5">
+              <path d="M3.5 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
         </div>
       </details>
     ))
   }
 </div>
+
+<style>
+  .plus-bar {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .service-item[open] .plus-bar {
+    transform: scaleY(0);
+  }
+
+  /* Smooth open and close where the browser can animate to `auto` height.
+     Elsewhere the panel simply snaps open, which is the native behaviour. */
+  @supports (interpolate-size: allow-keywords) {
+    @media (prefers-reduced-motion: no-preference) {
+      .service-item {
+        interpolate-size: allow-keywords;
+      }
+      .service-item::details-content {
+        block-size: 0;
+        overflow: hidden;
+        transition:
+          block-size 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+          content-visibility 0.5s allow-discrete;
+      }
+      .service-item[open]::details-content {
+        block-size: auto;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plus-bar {
+      transition: none;
+    }
+  }
+</style>

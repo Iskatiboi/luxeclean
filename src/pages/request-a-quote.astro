@@ -1,30 +1,59 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import QuoteForm from "../components/QuoteForm.tsx";
-import PlaceholderImage from "../components/PlaceholderImage.astro";
+import FramedPhoto from "../components/FramedPhoto.astro";
+import requestImage from "../components/request.jpg";
 import { site } from "../site.config";
+
+// Sets expectations before the visitor commits to a longer form. Deliberately no
+// turnaround times: none have been confirmed with the business.
+const steps = [
+  { title: "Tell us about the job", body: "A few details about the space and what you need done." },
+  { title: "Get your free quote", body: "We review it and email you a quote. No cost, no obligation." },
+  { title: "Pick a time", body: "Choose a date that works and we take it from there." },
+];
 ---
 
 <Layout
   title="Request a Quote"
+  pattern="dots"
   description={`Request a free cleaning quote from Luxury Duo Cleaning LLC, serving ${site.serviceArea}.`}
 >
-  <section class="grid md:grid-cols-2">
-    <div class="order-1">
-      <div class="aspect-[4/3] md:aspect-auto md:h-full">
-        <PlaceholderImage label="request a quote — editorial shot" tone="dark" />
-      </div>
+  <section
+    class="mx-auto grid max-w-7xl gap-12 px-6 pb-20 pt-8 md:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14 lg:pb-28 lg:pt-12"
+  >
+    {/* Photo leads on desktop, but on phones it follows the form so the form is
+        the first thing a visitor reaches. */}
+    <div class="order-2 lg:order-1">
+      <FramedPhoto image={requestImage} alt="A bucket of cleaning supplies and a flat mop on a wooden floor in a sunlit living room" />
     </div>
-    <div class="order-2 flex flex-col justify-center gap-6 px-6 py-14 md:px-14 md:py-20">
-      <div>
-        <h1 class="font-heading text-3xl md:text-4xl">Request a Quote</h1>
-        <p class="mt-3 max-w-md font-body text-ink/80">
-          Tell us about your space and what you need done. The more detail you give us, the more accurate
-          your quote will be — this works for a single home, a recurring office contract, or a
-          post-construction cleanup.
+
+    <div class="order-1 flex flex-col gap-10 lg:order-2">
+      <header>
+        <h1 class="font-heading text-4xl leading-tight md:text-5xl">Request a free quote</h1>
+        <p class="mt-4 max-w-lg font-body leading-relaxed text-ink/75">
+          One home, a recurring office contract, or a post-construction cleanup. Tell us what you need and
+          we'll put together a quote for your space.
         </p>
+      </header>
+
+      <ol class="grid gap-3 sm:grid-cols-3">
+        {
+          steps.map((step, i) => (
+            <li class="rounded-2xl bg-surface/70 p-4 ring-1 ring-ink/5">
+              <span class="font-body text-xs font-semibold uppercase tracking-[0.14em] text-ink/55">
+                Step {i + 1}
+              </span>
+              <span class="mt-1.5 block font-heading text-base leading-snug">{step.title}</span>
+              <span class="mt-1 block font-body text-sm leading-relaxed text-ink/70">{step.body}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="@container rounded-[32px] bg-surface p-6 shadow-[0_24px_60px_rgba(23,17,13,0.08)] ring-1 ring-ink/5 md:p-10">
+        <QuoteForm client:load />
       </div>
-      <QuoteForm client:load />
     </div>
   </section>
 </Layout>

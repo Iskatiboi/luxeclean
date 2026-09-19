@@ -1,0 +1,83 @@
+---
+import { Image } from "astro:assets";
+import { services, type Testimonial } from "../site.config";
+import { serviceImages } from "../lib/serviceImages";
+import { initials } from "../lib/initials";
+import { url } from "../lib/url";
+import heroImage from "./hero.jpg";
+
+interface Props {
+  testimonial: Testimonial;
+  index: number;
+}
+
+const { testimonial: t, index } = Astro.props;
+const service = services.find((s) => s.slug === t.service);
+// Each review is paired with the photo of the service it describes, so the page
+// shows the work itself rather than a wall of text. Falls back to the hero shot.
+const photo = (service && serviceImages[service.slug]) ?? heroImage;
+// Photo alternates sides down the page for an editorial zigzag rhythm.
+const flip = index % 2 === 1;
+const number = String(index + 1).padStart(2, "0");
+const starPath = "M8 1.2l1.95 4.28 4.65.5-3.47 3.13.96 4.59L8 11.4l-4.09 2.3.96-4.59L1.4 5.98l4.65-.5L8 1.2z";
+---
+
+<figure class="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
+  <div class:list={["relative lg:col-span-5", flip ? "lg:order-2 lg:col-start-8" : "lg:col-start-1"]}>
+    <div data-reveal="frame" class="overflow-hidden rounded-[32px] shadow-[0_30px_80px_rgba(23,17,13,0.16)]">
+      <Image
+        src={photo}
+        alt=""
+        class="aspect-[4/3] w-full object-cover object-center lg:aspect-[4/5]"
+        loading="lazy"
+      />
+    </div>
+    {/* Floats half off the photo's edge, so the rating reads as a stamp on the work. */}
+    <span
+      data-reveal="rise"
+      class:list={[
+        "absolute -bottom-5 flex items-center gap-2 rounded-full bg-surface px-4 py-2.5 shadow-[0_12px_30px_rgba(23,17,13,0.14)]",
+        flip ? "right-6 lg:-left-6 lg:right-auto" : "right-6 lg:-right-6",
+      ]}
+    >
+      <span class="sr-only">Rated {t.rating} out of 5</span>
+      <span class="flex gap-0.5 text-accent" aria-hidden="true">
+        {Array.from({ length: t.rating }).map(() => (
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d={starPath} /></svg>
+        ))}
+      </span>
+      <span class="font-body text-xs font-semibold text-ink" aria-hidden="true">{t.rating}.0</span>
+    </span>
+  </div>
+
+  <div class:list={["lg:col-span-6", flip ? "lg:order-1 lg:col-start-1" : "lg:col-start-7"]}>
+    <span data-reveal="rise" aria-hidden="true" class="block font-heading text-6xl leading-none text-accent md:text-7xl">
+      {number}
+    </span>
+    <blockquote data-reveal="heading" class="mt-6 font-heading text-2xl leading-snug text-ink md:text-3xl lg:text-[2.1rem] lg:leading-[1.3]">
+      &ldquo;{t.quote}&rdquo;
+    </blockquote>
+    <figcaption data-reveal="rise" class="mt-8 flex flex-wrap items-center justify-between gap-5 border-t border-ink/15 pt-6">
+      <span class="flex items-center gap-4">
+        <span aria-hidden="true" class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-ink font-body text-xs font-semibold tracking-wide text-surface">
+          {initials(t.author)}
+        </span>
+        <span>
+          <span class="block font-body font-semibold text-ink">{t.author}</span>
+          <span class="block font-body text-sm text-ink/65">{t.role}</span>
+        </span>
+      </span>
+      {service && (
+        <a
+          href={url(`/services#${service.slug}`)}
+          class="group inline-flex items-center gap-2 rounded-full border border-ink/20 px-4 py-2 font-body text-xs text-ink transition-colors hover:border-ink hover:bg-ink hover:text-surface"
+        >
+          {service.title}
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true" class="transition-transform group-hover:translate-x-0.5">
+            <path d="M3.5 8h9M8.5 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      )}
+    </figcaption>
+  </div>
+</figure>

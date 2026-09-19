@@ -1,35 +1,120 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import ServiceAccordion from "../components/ServiceAccordion.astro";
-import PlaceholderImage from "../components/PlaceholderImage.astro";
 import PillButton from "../components/PillButton.astro";
 import { services, site } from "../site.config";
+import { serviceImages } from "../lib/serviceImages";
+import heroImage from "../components/hero.jpg";
+
+// The resting frame shows when no service is open; each service adds its own.
+const frames = [
+  { key: "default", image: heroImage, caption: "Our services" },
+  ...services.map((s) => ({ key: s.slug, image: serviceImages[s.slug], caption: s.title })),
+];
 ---
 
 <Layout
   title="Services"
+  pattern="dots"
   description={`Residential, commercial, Airbnb, move-in/move-out, deep cleaning, and construction cleanup services in ${site.serviceArea}.`}
 >
-  <section class="grid md:grid-cols-2">
-    <div class="order-2 flex flex-col justify-center gap-5 px-6 py-14 md:order-1 md:px-14 md:py-20">
-      <h1 class="font-heading text-3xl md:text-4xl">Explore our services</h1>
-      <p class="max-w-md font-body text-ink/80">
-        Get ready to discover the sparkle in your world with cleaning services tailored to your space —
-        from a single room to a full job site.
+  {/* From lg the list gets the wider share: the photos are portrait and the
+      service titles need the room to sit on one line each. */}
+  <section class="grid lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+    {/* Plain page margins rather than aligning to the header's logo, which left a
+        wide empty strip down the left on large screens. */}
+    <div class="order-2 flex flex-col px-6 pb-16 pt-12 md:px-10 md:pb-24 lg:order-1 lg:px-14 lg:pt-16 xl:pl-20">
+      <h1 class="font-heading text-4xl leading-tight md:text-5xl">Explore our services</h1>
+      <p class="mt-5 max-w-md font-body leading-relaxed text-ink/75">
+        Cleaning tailored to your space, from a single room to a full job site. Open any service to see
+        what's included.
       </p>
-      <ServiceAccordion services={services} />
+      <div class="mt-10">
+        <ServiceAccordion services={services} />
+      </div>
     </div>
-    <div class="order-1 md:order-2">
-      <div class="aspect-[4/3] md:aspect-auto md:h-full">
-        <PlaceholderImage label="services — editorial product shot" tone="light" />
+
+    {/* Photos are decorative here: the accordion carries every word of meaning, so
+        the frames are hidden from assistive tech rather than read out six times.
+        Sticky on desktop so the photo stays beside the accordion as it grows. It
+        sits below the header area (the page pads its top by 7rem), so its height is
+        the screen less that 7rem: a full 100dvh ran its bottom off the screen. All
+        frames load up front (at low priority) so the first cross-fade to a service
+        never reveals a half-loaded photo. */}
+    <div class="order-1 lg:order-2">
+      <div
+        data-service-gallery
+        aria-hidden="true"
+        class="relative aspect-[4/3] overflow-hidden bg-muted md:aspect-[16/9] lg:sticky lg:top-28 lg:aspect-auto lg:h-[calc(100dvh-7rem)]"
+      >
+        {
+          frames.map((frame) => (
+            <div data-frame={frame.key} data-active={frame.key === "default" ? "" : undefined} class="gallery-frame absolute inset-0">
+              <Image
+                src={frame.image}
+                alt=""
+                class="h-full w-full object-cover object-center"
+                loading="eager"
+                fetchpriority={frame.key === "default" ? "high" : "low"}
+              />
+              <span class="absolute bottom-6 left-6 rounded-full bg-surface/90 px-4 py-2 font-body text-xs font-semibold uppercase tracking-[0.16em] text-ink backdrop-blur-sm md:bottom-10 md:left-10">
+                {frame.caption}
+              </span>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <section class="mx-auto max-w-6xl px-6 pb-16 md:px-10 md:pb-24">
+  {/* Same side margins as the column above, so the strip starts on its line. */}
+  <section class="px-6 pb-16 md:px-10 md:pb-24 lg:px-14 xl:pl-20">
     <div class="flex flex-col items-start gap-4 border-t border-ink pt-10 md:flex-row md:items-center md:justify-between">
       <p class="max-w-md font-heading text-2xl">Not sure which service fits? Tell us about your space.</p>
       <PillButton href="/request-a-quote">Request a Quote</PillButton>
     </div>
   </section>
 </Layout>
+
+<style>
+  .gallery-frame {
+    opacity: 0;
+    transform: scale(1.04);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .gallery-frame[data-active] {
+    opacity: 1;
+    transform: scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-frame {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const items = [...document.querySelectorAll<HTMLDetailsElement>("details[data-service]")];
+  const frames = [...document.querySelectorAll<HTMLElement>("[data-service-gallery] [data-frame]")];
+
+  const sync = () => {
+    const key = items.find((d) => d.open)?.id ?? "default";
+    frames.forEach((f) => f.toggleAttribute("data-active", f.dataset.frame === key));
+  };
+
+  // Footer links and the homepage's "See details" pills land on /services#<slug>.
+  // Open that service so the visitor arrives on what they clicked, not a closed list.
+  const openFromHash = () => {
+    const target = items.find((d) => `#${d.id}` === location.hash);
+    if (target) target.open = true;
+    sync();
+  };
+
+  items.forEach((d) => d.addEventListener("toggle", sync));
+  window.addEventListener("hashchange", openFromHash);
+  openFromHash();
+</script>
